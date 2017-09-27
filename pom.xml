@@ -14,8 +14,23 @@
 		<module>container-webapp-tomcat</module>
 	</modules>
 
+	<properties>
+		<logback.version>1.2.3</logback.version>
+		<slf4j-api.version>1.7.25</slf4j-api.version>
+	</properties>
+
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j-api.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>org.bpt</groupId>
 				<version>0.0.1-SNAPSHOT</version>
