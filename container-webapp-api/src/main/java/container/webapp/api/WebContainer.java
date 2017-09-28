@@ -1,5 +1,7 @@
 package container.webapp.api;
 
+import org.springframework.context.ApplicationContext;
+
 public interface WebContainer {
-	public void start();
+	void start(ApplicationContext acac);
 }
