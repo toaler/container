@@ -1,13 +1,13 @@
 package container.webapp.tomcat;
 
 import org.apache.catalina.startup.Tomcat;
+import org.springframework.context.ApplicationContext;
 
 import container.webapp.api.WebContainer;
 
 public class TomcatWebContainer implements WebContainer {
 
-	public void start() {
-
+	public void start(ApplicationContext acac) {
 		try {
 			Tomcat tomcat = new Tomcat();
 			tomcat.setPort(8080);
@@ -18,5 +18,4 @@ public class TomcatWebContainer implements WebContainer {
 			throw new RuntimeException(x);
 		}
 	}
-
 }
