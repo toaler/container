@@ -12,15 +12,34 @@
 		<module>container-webapp-jetty</module>
 		<module>container-driver</module>
 		<module>container-webapp-tomcat</module>
+		<module>container-example-webapp</module>
 	</modules>
 
 	<properties>
 		<logback.version>1.2.3</logback.version>
 		<slf4j-api.version>1.7.25</slf4j-api.version>
+		<alpn-boot-version>8.1.11.v20170118</alpn-boot-version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>org.mortbay.jetty.alpn</groupId>
+				<artifactId>alpn-boot</artifactId>
+				<version>${alpn-boot-version}</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>19.0</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>3.1.0</version>
+			</dependency>
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
@@ -135,45 +154,6 @@
 							<classpathPrefix>libs/</classpathPrefix>
 						</manifest>
 					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.10</version>
-				<executions>
-					<execution>
-						<id>copy-main-deps</id>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/libs</outputDirectory>
-							<overWriteRelease>false</overWriteRelease>
-							<overWriteSnapshots>false</overWriteSnapshots>
-							<overWriteIfNewer>true</overWriteIfNewer>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.4.0</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<executable>java</executable>
-					<arguments>
-						<argument>-Xbootclasspath/p:target/libs/alpn-boot-${alpn-boot-version}.jar</argument>
-						<argument>-jar</argument>
-						<argument>target/${project.artifactId}-${project.version}.jar</argument>
-					</arguments>
 				</configuration>
 			</plugin>
 		</plugins>
