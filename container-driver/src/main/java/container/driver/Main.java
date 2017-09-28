@@ -17,6 +17,6 @@ public class Main {
 		acac.refresh();
 
 		WebContainer wc = (WebContainer) acac.getBean("Jetty");
-		wc.start();
+		wc.start(acac);
 	}
 }
