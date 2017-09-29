@@ -100,6 +100,8 @@
 					<executable>java</executable>
 					<arguments>
 						<argument>-Xbootclasspath/p:/home/toal/git/container/container-driver/target/container-driver-0.0.1-SNAPSHOT/WEB-INF/lib/alpn-boot-8.1.11.v20170118.jar</argument>
+						<argument>-Dorg.eclipse.jetty.util.log.class=org.eclipse.jetty.util.log.StdErrLog</argument>
+						<argument>-Dorg.eclipse.jetty.LEVEL=DEBUG</argument>
 						<argument>-cp</argument>
 						<classpath />
 						<argument>container.driver.Main</argument>
