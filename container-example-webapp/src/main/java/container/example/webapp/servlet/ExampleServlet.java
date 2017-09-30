@@ -15,6 +15,6 @@ public class ExampleServlet extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		response.getWriter().printf("Thread %s completed the task");
+		response.getWriter().printf("Thread completed the task");
 	}
 }

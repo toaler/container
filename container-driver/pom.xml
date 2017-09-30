@@ -10,7 +10,7 @@
 	</parent>
 	<artifactId>container-driver</artifactId>
 	<name>container-driver</name>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jetty-version>9.4.6.v20170531</jetty-version>
@@ -99,16 +99,39 @@
 					<classpathScope>test</classpathScope>
 					<executable>java</executable>
 					<arguments>
-						<argument>-Xbootclasspath/p:/home/toal/git/container/container-driver/target/container-driver-0.0.1-SNAPSHOT/WEB-INF/lib/alpn-boot-8.1.11.v20170118.jar</argument>
-						<argument>-Dorg.eclipse.jetty.util.log.class=org.eclipse.jetty.util.log.StdErrLog</argument>
-						<argument>-Dorg.eclipse.jetty.LEVEL=DEBUG</argument>
-						<argument>-cp</argument>
-						<classpath />
-						<argument>container.driver.Main</argument>
+						<argument>-Xbootclasspath/p:lib/alpn-boot-8.1.11.v20170118.jar</argument>
+						<argument>-jar</argument>
+						<argument>target/container-driver-0.0.1-SNAPSHOT-jar-with-dependencies.jar</argument>
 					</arguments>
 				</configuration>
 			</plugin>
-
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.4.1</version>
+				<configuration>
+					<!-- get all project dependencies -->
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+					<!-- MainClass in mainfest make a executable jar -->
+					<archive>
+						<manifest>
+							<mainClass>container.driver.Main</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<!-- bind to the packaging phase -->
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>
