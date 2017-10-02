@@ -23,7 +23,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.bpt</groupId>
-			<artifactId>container-webapp-jetty</artifactId>
+			<artifactId>container-webapp-tomcat</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.bpt</groupId>
@@ -39,19 +39,17 @@
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-webapp</artifactId>
-			<version>${jetty-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-annotations</artifactId>
-			<version>${jetty-version}</version>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -101,37 +99,30 @@
 					<arguments>
 						<argument>-Xbootclasspath/p:lib/alpn-boot-8.1.11.v20170118.jar</argument>
 						<argument>-jar</argument>
-						<argument>target/container-driver-0.0.1-SNAPSHOT-jar-with-dependencies.jar</argument>
+						<!-- <argument>target/container-driver-0.0.1-SNAPSHOT-jar-with-dependencies.jar</argument> -->
 					</arguments>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.4.1</version>
-				<configuration>
-					<!-- get all project dependencies -->
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<!-- MainClass in mainfest make a executable jar -->
-					<archive>
-						<manifest>
-							<mainClass>container.driver.Main</mainClass>
-						</manifest>
-					</archive>
-				</configuration>
+				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>
 					<execution>
-						<id>make-assembly</id>
-						<!-- bind to the packaging phase -->
-						<phase>package</phase>
+						<id>copy-dependencies</id>
+						<phase>prepare-package</phase>
 						<goals>
-							<goal>single</goal>
+							<goal>copy-dependencies</goal>
 						</goals>
+						<configuration>
+							<outputDirectory>${project.basedir}/lib</outputDirectory>
+							<overWriteReleases>false</overWriteReleases>
+							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteIfNewer>true</overWriteIfNewer>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
+
 		</plugins>
 	</build>
 </project>
