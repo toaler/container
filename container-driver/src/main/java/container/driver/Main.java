@@ -30,7 +30,7 @@ public class Main {
 		acac.scan("configuration");
 		acac.refresh();
 
-		WebContainer wc = (WebContainer) acac.getBean("Tomcat");
+		WebContainer wc = (WebContainer) acac.getBean("Jetty");
 		wc.start(acac);
 	}
 

@@ -9,7 +9,7 @@
 	<artifactId>container-webapp-tomcat</artifactId>
 	<packaging>jar</packaging>
 	<properties>
-		<tomcat.version>9.0.0.M26</tomcat.version>
+		<tomcat.version>9.0.1</tomcat.version>
 	</properties>
 
 	<dependencies>
@@ -55,6 +55,12 @@
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
 			<artifactId>tomcat-jsp-api</artifactId>
+			<version>${tomcat.version}</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-util-scan -->
+		<dependency>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-util-scan</artifactId>
 			<version>${tomcat.version}</version>
 		</dependency>
 		<dependency>

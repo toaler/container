@@ -11,6 +11,7 @@ public class JettyConfiguration {
 
 	@Bean(name = "Jetty")
 	public WebContainer getJetty() {
-		return new JettyWebContainer();
+//		return new JettyWebContainer();
+		return null;
 	}
 }

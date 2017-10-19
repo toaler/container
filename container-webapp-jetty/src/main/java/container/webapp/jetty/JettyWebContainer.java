@@ -40,15 +40,17 @@ import com.google.common.io.Files;
 
 import container.webapp.api.WebContainer;
 
-public class JettyWebContainer implements WebContainer {
+public class JettyWebContainer {
 
-	@Override
-	public void start(ApplicationContext acac) {
+	public static void main(String args[]) {
+
+		// @Override
+		// public void start(ApplicationContext acac) {
 
 		try {
 
 			Log.setLog(new StdErrLog());
-			
+
 			StringBuilder sb = new StringBuilder();
 			sb.append("     ____.       __    __          \n");
 			sb.append("    |    | _____/  |__/  |_ ___.__.\n");
@@ -56,9 +58,9 @@ public class JettyWebContainer implements WebContainer {
 			sb.append("/\\__|    \\  ___/|  |  |  |  \\___  |\n");
 			sb.append("\\________|\\___  >__|  |__|  / ____|\n");
 			sb.append("              \\/            \\/\n");
-			
+
 			System.out.println(sb.toString());
-			
+
 			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
 			Server server = new Server();
@@ -119,14 +121,15 @@ public class JettyWebContainer implements WebContainer {
 			ALPN.debug = true;
 			server.addConnector(http2Connector);
 
-	        WebAppContext context = new WebAppContext();
-	        context.setResourceBase("/");
-	        
+			WebAppContext context = new WebAppContext();
+			context.setContextPath("/example");
+			context.setWar(
+					"/home/toal/git/container/container-example-webapp/target/container-example-webapp-0.0.1-SNAPSHOT.war");
+			context.setExtractWAR(true);
+
 			context.setConfigurations(new Configuration[] { new AnnotationConfiguration(), new WebInfConfiguration(),
 					new WebXmlConfiguration(), new MetaInfConfiguration(), new FragmentConfiguration(),
 					new EnvConfiguration(), new PlusConfiguration(), new JettyWebXmlConfiguration() });
-
-			context.setContextPath("/");
 
 			String url = JettyWebContainer.class.getProtectionDomain().getCodeSource().getLocation().toString();
 			String jarRegex = ".*" + Files.getNameWithoutExtension(url) + "\\." + Files.getFileExtension(url);
@@ -145,69 +148,57 @@ public class JettyWebContainer implements WebContainer {
 			throw new RuntimeException(x);
 		}
 	}
-	
-	 private static URI findWebResourceBase(ClassLoader classLoader)
-	    {
-	        String webResourceRef = "WEB-INF/web.xml";
 
-	        try
-	        {
-	            // Look for resource in classpath (best choice when working with archive jar/war file)
-	            URL webXml = classLoader.getResource('/'+webResourceRef);
-	            if (webXml != null)
-	            {
-	                URI uri = webXml.toURI().resolve("..").normalize();
-	                System.err.printf("WebResourceBase (Using ClassLoader reference) %s%n", uri);
-	                return uri;
-	            }
-	        }
-	        catch (URISyntaxException e)
-	        {
-	            throw new RuntimeException("Bad ClassPath reference for: " + webResourceRef,e);
-	        }
-	        
-	        // Look for resource in common file system paths
-	        try
-	        {
-	            Path pwd = new File(System.getProperty("user.dir")).toPath().toRealPath();
-	            FileSystem fs = pwd.getFileSystem();
-	            
-	            // Try the generated maven path first
-	            PathMatcher matcher = fs.getPathMatcher("glob:**/embedded-servlet-*");
-	            try (DirectoryStream<Path> dir = java.nio.file.Files.newDirectoryStream(pwd.resolve("target")))
-	            {
-	                for(Path path: dir)
-	                {
-	                    if(java.nio.file.Files.isDirectory(path) && matcher.matches(path))
-	                    {
-	                        // Found a potential directory
-	                        Path possible = path.resolve(webResourceRef);
-	                        // Does it have what we need?
-	                        if(java.nio.file.Files.exists(possible))
-	                        {
-	                            URI uri = path.toUri();
-	                            System.err.printf("WebResourceBase (Using discovered /target/ Path) %s%n", uri);
-	                            return uri;
-	                        }
-	                    }
-	                }
-	            }
-	            
-	            // Try the source path next
-	            Path srcWebapp = pwd.resolve("src/main/webapp/" + webResourceRef);
-	            if(java.nio.file.Files.exists(srcWebapp))
-	            {
-	                URI uri = srcWebapp.getParent().toUri();
-	                System.err.printf("WebResourceBase (Using /src/main/webapp/ Path) %s%n", uri);
-	                return uri;
-	            }
-	        }
-	        catch (Throwable t)
-	        {
-	            throw new RuntimeException("Unable to find web resource in file system: " + webResourceRef, t);
-	        }
-	        
-	        throw new RuntimeException("Unable to find web resource ref: " + webResourceRef);
-	    }
+	private static URI findWebResourceBase(ClassLoader classLoader) {
+		String webResourceRef = "WEB-INF/web.xml";
+
+		try {
+			// Look for resource in classpath (best choice when working with
+			// archive jar/war file)
+			URL webXml = classLoader.getResource('/' + webResourceRef);
+			if (webXml != null) {
+				URI uri = webXml.toURI().resolve("..").normalize();
+				System.err.printf("WebResourceBase (Using ClassLoader reference) %s%n", uri);
+				return uri;
+			}
+		} catch (URISyntaxException e) {
+			throw new RuntimeException("Bad ClassPath reference for: " + webResourceRef, e);
+		}
+
+		// Look for resource in common file system paths
+		try {
+			Path pwd = new File(System.getProperty("user.dir")).toPath().toRealPath();
+			FileSystem fs = pwd.getFileSystem();
+
+			// Try the generated maven path first
+			PathMatcher matcher = fs.getPathMatcher("glob:**/embedded-servlet-*");
+			try (DirectoryStream<Path> dir = java.nio.file.Files.newDirectoryStream(pwd.resolve("target"))) {
+				for (Path path : dir) {
+					if (java.nio.file.Files.isDirectory(path) && matcher.matches(path)) {
+						// Found a potential directory
+						Path possible = path.resolve(webResourceRef);
+						// Does it have what we need?
+						if (java.nio.file.Files.exists(possible)) {
+							URI uri = path.toUri();
+							System.err.printf("WebResourceBase (Using discovered /target/ Path) %s%n", uri);
+							return uri;
+						}
+					}
+				}
+			}
+
+			// Try the source path next
+			Path srcWebapp = pwd.resolve("src/main/webapp/" + webResourceRef);
+			if (java.nio.file.Files.exists(srcWebapp)) {
+				URI uri = srcWebapp.getParent().toUri();
+				System.err.printf("WebResourceBase (Using /src/main/webapp/ Path) %s%n", uri);
+				return uri;
+			}
+		} catch (Throwable t) {
+			throw new RuntimeException("Unable to find web resource in file system: " + webResourceRef, t);
+		}
+
+		throw new RuntimeException("Unable to find web resource ref: " + webResourceRef);
+	}
 
 }
