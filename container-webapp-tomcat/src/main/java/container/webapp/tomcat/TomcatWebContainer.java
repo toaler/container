@@ -8,15 +8,29 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
+import container.webapp.api.WebContainer;
 
-public class TomcatWebContainer {
+public class TomcatWebContainer implements WebContainer {
 
 	private static final Logger logger = LoggerFactory.getLogger(TomcatWebContainer.class);
 
-	public static void main(String args[]) {
+	@Override
+	public void start(String contextPath, String war, ApplicationContext acac) {
 
 		try {
+			StringBuilder sb = new StringBuilder();
+
+			sb.append("___________                           __   \n");
+			sb.append("\\__    ___/___   _____   ____ _____ _/  |_ \n");
+			sb.append("  |    | /  _ \\ /     \\_/ ___\\\\__  \\\\   __\\\n");
+			sb.append("  |    |(  <_> )  Y Y  \\  \\___ / __ \\|  |  \n");
+			sb.append("  |____| \\____/|__|_|  /\\___  >____  /__|  \n");
+			sb.append("                     \\/     \\/     \\/      \n");
+
+			System.out.println(sb.toString());
+
 			Tomcat tomcat = new Tomcat();
 
 			File docBase = new File(System.getProperty("java.io.tmpdir"));
@@ -44,10 +58,7 @@ public class TomcatWebContainer {
 			host.setAutoDeploy(true);
 			host.setDeployOnStartup(true);
 
-			Context c = tomcat.addWebapp(host, "/example",
-					new File(
-							"/home/toal/git/container/container-example-webapp/target/container-example-webapp-0.0.1-SNAPSHOT.war")
-									.getAbsolutePath());
+			tomcat.addWebapp(host, contextPath, new File(war).getAbsolutePath());
 
 			tomcat.start();
 			tomcat.getServer().await();
@@ -55,5 +66,4 @@ public class TomcatWebContainer {
 			throw new RuntimeException("Unable to launch tomcat ", e);
 		}
 	}
-
 }

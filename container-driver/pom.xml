@@ -23,7 +23,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.bpt</groupId>
-			<artifactId>container-webapp-jetty</artifactId>
+			<artifactId>container-webapp-tomcat</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.bpt</groupId>

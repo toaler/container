@@ -30,8 +30,11 @@ public class Main {
 		acac.scan("configuration");
 		acac.refresh();
 
-		WebContainer wc = (WebContainer) acac.getBean("Jetty");
-		wc.start(acac);
+		String contextPath = "/example";
+		String war = "/home/toal/git/container/container-example-webapp/target/container-example-webapp-0.0.1-SNAPSHOT.war";
+		
+		WebContainer wc = (WebContainer) acac.getBean("Tomcat");
+		wc.start(contextPath, war, acac);
 	}
 
 }

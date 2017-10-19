@@ -25,7 +25,6 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.StdErrLog;
-import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.FragmentConfiguration;
@@ -40,12 +39,10 @@ import com.google.common.io.Files;
 
 import container.webapp.api.WebContainer;
 
-public class JettyWebContainer {
+public class JettyWebContainer implements WebContainer {
 
-	public static void main(String args[]) {
-
-		// @Override
-		// public void start(ApplicationContext acac) {
+	@Override
+	public void start(String contextPath, String war, ApplicationContext acac) {
 
 		try {
 
@@ -122,9 +119,8 @@ public class JettyWebContainer {
 			server.addConnector(http2Connector);
 
 			WebAppContext context = new WebAppContext();
-			context.setContextPath("/example");
-			context.setWar(
-					"/home/toal/git/container/container-example-webapp/target/container-example-webapp-0.0.1-SNAPSHOT.war");
+			context.setContextPath(contextPath);
+			context.setWar(war);
 			context.setExtractWAR(true);
 
 			context.setConfigurations(new Configuration[] { new AnnotationConfiguration(), new WebInfConfiguration(),
@@ -200,5 +196,4 @@ public class JettyWebContainer {
 
 		throw new RuntimeException("Unable to find web resource ref: " + webResourceRef);
 	}
-
 }
