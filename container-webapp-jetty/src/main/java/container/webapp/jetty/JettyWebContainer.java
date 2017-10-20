@@ -33,31 +33,37 @@ import org.eclipse.jetty.webapp.MetaInfConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.webapp.WebInfConfiguration;
 import org.eclipse.jetty.webapp.WebXmlConfiguration;
+import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 import com.google.common.io.Files;
 
 import container.webapp.api.WebAppMetadata;
 import container.webapp.api.WebContainer;
 
+@Component("Jetty")
 public class JettyWebContainer implements WebContainer {
+	
+    private static Logger logger;
+    
+    public JettyWebContainer(Logger logger) {
+        this.logger = logger;
+    }
 
 	@Override
 	public void start(WebAppMetadata metadata, ApplicationContext acac) {
 
 		try {
-
-			Log.setLog(new StdErrLog());
-
 			StringBuilder sb = new StringBuilder();
-			sb.append("     ____.       __    __          \n");
+			sb.append("\n     ____.       __    __          \n");
 			sb.append("    |    | _____/  |__/  |_ ___.__.\n");
 			sb.append("    |    |/ __ \\   __\\   __<   |  |\n");
 			sb.append("/\\__|    \\  ___/|  |  |  |  \\___  |\n");
 			sb.append("\\________|\\___  >__|  |__|  / ____|\n");
 			sb.append("              \\/            \\/\n");
 
-			System.out.println(sb.toString());
+			logger.info(sb.toString());
 
 			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
