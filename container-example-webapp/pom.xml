@@ -14,32 +14,13 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.bpt</groupId>
+			<artifactId>container-webapp-api</artifactId>
+		</dependency>
 	</dependencies>
-
-	<build>
-		<plugins>
-			<!-- plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>3.0.0</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<classpathPrefix>lib/</classpathPrefix>
-						</manifest>
-					</archive>
-
-					<webResources>
-						<resource>
-							<directory>${project.basedir}/src/main/resources
-							</directory>
-						</resource>
-					</webResources>
-
-					<warName>mywar</warName>
-				</configuration>
-			</plugin -->
-		</plugins>
-	</build>
 </project>

@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
+import container.webapp.api.WebAppMetadata;
 import container.webapp.api.WebContainer;
 
 public class TomcatWebContainer implements WebContainer {
@@ -17,7 +18,7 @@ public class TomcatWebContainer implements WebContainer {
 	private static final Logger logger = LoggerFactory.getLogger(TomcatWebContainer.class);
 
 	@Override
-	public void start(String contextPath, String war, ApplicationContext acac) {
+	public void start(WebAppMetadata metadata, ApplicationContext acac) {
 
 		try {
 			StringBuilder sb = new StringBuilder();
@@ -58,7 +59,7 @@ public class TomcatWebContainer implements WebContainer {
 			host.setAutoDeploy(true);
 			host.setDeployOnStartup(true);
 
-			tomcat.addWebapp(host, contextPath, new File(war).getAbsolutePath());
+			tomcat.addWebapp(host, metadata.getContextPath(), metadata.getWar().getAbsolutePath());
 
 			tomcat.start();
 			tomcat.getServer().await();

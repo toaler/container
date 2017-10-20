@@ -37,12 +37,13 @@ import org.springframework.context.ApplicationContext;
 
 import com.google.common.io.Files;
 
+import container.webapp.api.WebAppMetadata;
 import container.webapp.api.WebContainer;
 
 public class JettyWebContainer implements WebContainer {
 
 	@Override
-	public void start(String contextPath, String war, ApplicationContext acac) {
+	public void start(WebAppMetadata metadata, ApplicationContext acac) {
 
 		try {
 
@@ -119,8 +120,8 @@ public class JettyWebContainer implements WebContainer {
 			server.addConnector(http2Connector);
 
 			WebAppContext context = new WebAppContext();
-			context.setContextPath(contextPath);
-			context.setWar(war);
+			context.setContextPath(metadata.getContextPath());
+			context.setWar(metadata.getWar().getAbsolutePath());
 			context.setExtractWAR(true);
 
 			context.setConfigurations(new Configuration[] { new AnnotationConfiguration(), new WebInfConfiguration(),

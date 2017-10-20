@@ -26,11 +26,6 @@
 			<artifactId>container-webapp-tomcat</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.bpt</groupId>
-			<artifactId>container-example-webapp</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 		</dependency>
@@ -116,7 +111,7 @@
 						<configuration>
 							<outputDirectory>${project.basedir}/lib</outputDirectory>
 							<overWriteReleases>false</overWriteReleases>
-							<overWriteSnapshots>false</overWriteSnapshots>
+							<overWriteSnapshots>true</overWriteSnapshots>
 							<overWriteIfNewer>true</overWriteIfNewer>
 						</configuration>
 					</execution>

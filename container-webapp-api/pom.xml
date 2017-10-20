@@ -18,5 +18,4 @@
 			<artifactId>spring-context</artifactId>
 		</dependency>
 	</dependencies>
-
 </project>

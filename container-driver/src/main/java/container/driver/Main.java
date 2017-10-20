@@ -1,7 +1,9 @@
 package container.driver;
 
+import container.webapp.api.WebAppMetadata;
 import container.webapp.api.WebContainer;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -30,11 +32,10 @@ public class Main {
 		acac.scan("configuration");
 		acac.refresh();
 
-		String contextPath = "/example";
-		String war = "/home/toal/git/container/container-example-webapp/target/container-example-webapp-0.0.1-SNAPSHOT.war";
-		
 		WebContainer wc = (WebContainer) acac.getBean("Tomcat");
-		wc.start(contextPath, war, acac);
+		WebAppMetadata metadata = (WebAppMetadata) acac.getBean("WebAppMetadata");
+		
+		wc.start(metadata, acac);
 	}
 
 }
