@@ -1,4 +1,4 @@
-package configuration;
+package container.driver.configuration;
 
 import container.webapp.api.WebContainer;
 import container.webapp.tomcat.TomcatWebContainer;
