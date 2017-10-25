@@ -25,7 +25,5 @@ public class SpringAnnotationBasedServletRegistrationListener implements Servlet
 
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
-		// TODO Auto-generated method stub
-
 	}
 }
