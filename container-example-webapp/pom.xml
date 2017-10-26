@@ -9,6 +9,9 @@
 	<artifactId>container-example-webapp</artifactId>
 	<packaging>war</packaging>
 
+	<!-- All dependencies that need to be part of WEB-INF/lib of the war need 
+		to be here otherwise class equivalence tests can fail due to the involved 
+		classes bleeding across multiple loaders. -->
 	<dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>
