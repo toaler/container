@@ -11,6 +11,7 @@ import container.webapp.api.WebAppMetadata;
 @Configuration
 public class DriverConfig {
 
+	// TODO Replace this
 	@Bean(name = "WebAppMetadata")
 	public WebAppMetadata getWebAppMetadata() {
 		return new WebAppMetadataImpl(

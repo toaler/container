@@ -66,8 +66,6 @@ public class JettyWebContainer implements WebContainer {
 
 			logger.info(sb.toString());
 
-			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
 			Server server = new Server();
 
 			int httpPort = 8080;
