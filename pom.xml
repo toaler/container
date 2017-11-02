@@ -20,8 +20,10 @@
 		<logback.version>1.2.3</logback.version>
 		<slf4j-api.version>1.7.25</slf4j-api.version>
 		<alpn-boot-version>8.1.11.v20170118</alpn-boot-version>
-		<jersey2.version>2.19</jersey2.version>
+		<jersey2.version>2.26</jersey2.version>
 		<jaxrs.version>2.0.1</jaxrs.version>
+		<spring.version>4.3.10.RELEASE</spring.version>
+		<jersey.spring.version>2.26</jersey.spring.version>
 	</properties>
 
 	<dependencyManagement>
@@ -72,22 +74,21 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-core</artifactId>
-				<version>4.3.10.RELEASE</version>
+				<version>${spring.version}</version>
 			</dependency>
 
 			<!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-web</artifactId>
-				<version>4.3.10.RELEASE</version>
+				<version>${spring.version}</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-context</artifactId>
-				<version>4.3.10.RELEASE</version>
+				<version>${spring.version}</version>
 			</dependency>
-			<!-- Jersey 2.19 -->
 			<dependency>
 				<groupId>org.glassfish.jersey.containers</groupId>
 				<artifactId>jersey-container-servlet</artifactId>
@@ -126,6 +127,24 @@
 				<groupId>org.webjars</groupId>
 				<artifactId>swagger-ui</artifactId>
 				<version>2.0.12</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.ext/jersey-spring4 -->
+			<dependency>
+				<groupId>org.glassfish.jersey.ext</groupId>
+				<artifactId>jersey-spring4</artifactId>
+				<version>${jersey.spring.version}</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-common -->
+			<dependency>
+				<groupId>org.glassfish.jersey.core</groupId>
+				<artifactId>jersey-common</artifactId>
+				<version>${jersey.spring.version}</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.glassfish.jersey.bundles.repackaged/jersey-guava -->
+			<dependency>
+				<groupId>org.glassfish.jersey.bundles.repackaged</groupId>
+				<artifactId>jersey-guava</artifactId>
+				<version>2.26-b03</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/junit/junit -->
 			<dependency>

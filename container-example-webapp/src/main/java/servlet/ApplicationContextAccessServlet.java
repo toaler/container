@@ -15,7 +15,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import configuration.MyComponent;
+import component.MyComponent;
 
 @SuppressWarnings("serial")
 @WebServlet(urlPatterns = { "/applicationcontext" })

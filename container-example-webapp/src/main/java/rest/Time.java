@@ -1,17 +1,21 @@
-package resource;
+package rest;
  
-import java.time.Instant;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import service.api.TimeService;
  
-/**
- * Root resource (exposed at "myresource" path)
- */
+@Component(value = "TimeRestApi")
 @Path("time")
 public class Time {
+	
+	@Autowired
+	private TimeService timeService;
  
     /**
      * Method handling HTTP GET requests. The returned object will be sent
@@ -22,6 +26,6 @@ public class Time {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String getTime() {
-    	return Instant.now().toString();
+    	return timeService.getTime();
     }
 }
