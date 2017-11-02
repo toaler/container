@@ -13,6 +13,7 @@ import javax.ws.rs.POST;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -25,6 +26,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
+@Component(value = "Registration")
 @Path("/v1/registration/{service}")
 @Api(tags = "Registration")
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)

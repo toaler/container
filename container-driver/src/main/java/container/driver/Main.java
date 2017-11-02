@@ -32,7 +32,7 @@ public class Main {
 		acac.scan("container.driver.configuration");
 		acac.refresh();
 
-		WebContainer wc = (WebContainer) acac.getBean("Tomcat");
+		WebContainer wc = (WebContainer) acac.getBean("Jetty");
 		WebAppMetadata metadata = (WebAppMetadata) acac.getBean("WebAppMetadata");
 		
 		wc.start(metadata, acac);
