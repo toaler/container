@@ -14,9 +14,11 @@ public class WebAppMetadataImpl implements WebAppMetadata {
 
 	private final String contextPath;
 	private final File war;
+	private final int port;
 	
-	public WebAppMetadataImpl(final File war) {
+	public WebAppMetadataImpl(final File war, final int port) {
 		this.war = war;
+		this.port = port;
 		
 		String filename = war.getName();
 		Matcher matcher = Pattern.compile("^\\D*(\\d)").matcher(filename);
@@ -33,6 +35,11 @@ public class WebAppMetadataImpl implements WebAppMetadata {
 	@Override
 	public File getWar() {
 		return war;
+	}
+
+	@Override
+	public int getPort() {
+		return port;
 	}
 
 }

@@ -15,6 +15,7 @@ public class DriverConfig {
 	@Bean(name = "WebAppMetadata")
 	public WebAppMetadata getWebAppMetadata() {
 		return new WebAppMetadataImpl(
-				new File("../container-example-webapp/target/container-example-webapp-0.0.1-SNAPSHOT.war"));
+				new File("../container-discovery/target/container-discovery-0.0.1-SNAPSHOT.war"),
+				Integer.getInteger("port", 8888));
 	}
 }
