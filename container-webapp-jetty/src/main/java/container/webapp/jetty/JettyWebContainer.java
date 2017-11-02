@@ -134,6 +134,10 @@ public class JettyWebContainer implements WebContainer {
 					new EnvConfiguration(), new PlusConfiguration(), new JettyWebXmlConfiguration() });
 
 			String url = JettyWebContainer.class.getProtectionDomain().getCodeSource().getLocation().toString();
+			
+			String a = ".*/^(asm-all-repackaged)[^/]*\\.jar";
+			context.setAttribute("org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern", a);
+			
 			String jarRegex = ".*" + Files.getNameWithoutExtension(url) + "\\." + Files.getFileExtension(url);
 			context.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern", jarRegex);
 			context.setParentLoaderPriority(true);
@@ -142,7 +146,7 @@ public class JettyWebContainer implements WebContainer {
 
 			server.start();
 
-			server.dump(System.err);
+			//server.dump(System.err);
 
 			server.join();
 
