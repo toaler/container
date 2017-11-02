@@ -13,6 +13,7 @@
 		<module>container-webapp-tomcat</module>
 		<module>container-driver</module>
 		<module>container-example-webapp</module>
+		<module>container-discovery</module>
 	</modules>
 
 	<properties>
@@ -97,6 +98,34 @@
 				<groupId>org.glassfish.jersey.core</groupId>
 				<artifactId>jersey-server</artifactId>
 				<version>${jersey2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.media</groupId>
+				<artifactId>jersey-media-json-jackson</artifactId>
+				<version>${jersey2.version}</version>  <!-- make sure the jersey version matches the one you are using -->
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.jaxrs</groupId>
+				<artifactId>jackson-jaxrs-json-provider</artifactId>
+				<version>2.9.2</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>2.9.2</version>
+			</dependency>
+			<dependency>
+				<groupId>io.swagger</groupId>
+				<artifactId>swagger-jersey2-jaxrs</artifactId>
+				<version>1.5.0</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.webjars/swagger-ui -->
+			<dependency>
+				<groupId>org.webjars</groupId>
+				<artifactId>swagger-ui</artifactId>
+				<version>2.0.12</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/junit/junit -->
 			<dependency>
