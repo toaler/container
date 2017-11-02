@@ -68,7 +68,7 @@ public class JettyWebContainer implements WebContainer {
 
 			Server server = new Server();
 
-			int httpPort = 8080;
+			int httpPort = metadata.getPort();
 			int httpsPort = 8443;
 
 			// Setup HTTP Connector
