@@ -2,6 +2,7 @@ package resource;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -9,6 +10,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import java.io.IOException;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import components.ServiceInstance;
+import components.ServiceMetadata;
 import components.ServiceRegistry;
 import components.Tags;
 import io.swagger.annotations.Api;
@@ -48,5 +51,12 @@ public class Registration {
 			Tags tags = mapper.readValue(json, Tags.class);
 			ServiceInstance instance = new ServiceInstance(ip, serviceRepoName, port, revision, tags);
 			registry.add(service, instance);
+	}
+
+	@GET
+	@ApiOperation(value = "Fetches service instances for the given service", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@Produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ServiceMetadata fetchServiceInstances(@ApiParam(name = "service", value = "Service for which operation is performed.", required = true) @PathParam("service") final String service) {
+		return new ServiceMetadata(service);
 	}
 }
