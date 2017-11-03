@@ -29,9 +29,10 @@ public class ServiceRegistry {
 		services.add(instance);
 		
 		
-		services = registryByRepo.get(instance.getServiceRepoName());
+		String repo = instance.getServiceRepoName();
+		services = registryByRepo.get(repo);
 		if (services == null) {
-			registryByRepo.put(serviceName, services = new HashSet<ServiceInstance>());
+			registryByRepo.put(repo, services = new HashSet<ServiceInstance>());
 		}
 		services.remove(instance);
 		services.add(instance);
@@ -41,7 +42,7 @@ public class ServiceRegistry {
 		return registry.getOrDefault(serviceName, EMPTY);
 	}
 	
-	public Set<ServiceInstance> getByRepo(String serviceName) {
-		return registryByRepo.getOrDefault(serviceName, EMPTY);
+	public Set<ServiceInstance> getByRepo(String repo) {
+		return registryByRepo.getOrDefault(repo, EMPTY);
 	}
 }

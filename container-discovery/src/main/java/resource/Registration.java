@@ -8,6 +8,7 @@ import javax.ws.rs.QueryParam;
 import java.io.IOException;
 import java.util.Set;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -24,6 +25,7 @@ import components.Environment;
 import components.ServiceInstance;
 import components.ServiceMetadata;
 import components.ServiceRegistry;
+import components.ServiceRepoMetadata;
 import components.Tags;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -52,9 +54,13 @@ public class Registration {
 			@ApiParam(name = "service_params", value = "JSON in the following format, see https://github.com/lyft/discovery#tags-json for expections", required = true) @QueryParam("service_params") String json)
 			throws JsonParseException, JsonMappingException, IOException {
 
+		if (service == null || ip == null || port == null || revision == null || json == null) {
+			throw new BadRequestException();
+		}
+		
 		ObjectMapper mapper = new ObjectMapper();
 		Tags tags = mapper.readValue(json, Tags.class);
-		ServiceInstance instance = new ServiceInstance(ip, serviceRepoName, port, revision, tags);
+		ServiceInstance instance = new ServiceInstance(service, ip, serviceRepoName, port, revision, tags);
 		registry.add(service, instance);
 	}
 
@@ -70,12 +76,13 @@ public class Registration {
 	}
 	
 	@GET
-	@Path("/repo/{service_repo_name}")
+	@Path("repo/{service_repo_name}")
 	@ApiOperation(value = "Fetches service instances for the given service", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public ServiceMetadata fetchServiceInstancesByServiceRepoName(
-			@ApiParam(name = "service", value = "Service for which operation is performed.", required = true) @PathParam("service") final String service) {
-		Set<ServiceInstance> instances = registry.get(service);
-		return new ServiceMetadata(environment.getType(), service,
+	public ServiceRepoMetadata fetchServiceInstancesByServiceRepoName(
+			@ApiParam(name = "service_repo_name", value = "Service for which operation is performed.", required = true) @PathParam("service_repo_name") final String serviceRepo) {
+		System.out.println("service repo " + serviceRepo);
+		Set<ServiceInstance> instances = registry.getByRepo(serviceRepo);
+		return new ServiceRepoMetadata(environment.getType(), serviceRepo,
 				instances.toArray(new ServiceInstance[instances.size()]));
 	}
 	

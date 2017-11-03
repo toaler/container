@@ -3,6 +3,7 @@ package components;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ServiceInstance {
+	private final String service;
 	private final String ip;
 	private final String serviceRepoName;
 	private final int port;
@@ -10,13 +11,19 @@ public class ServiceInstance {
 	private final Tags tags;
 	private final String lastCheckIn;
 
-	public ServiceInstance(String ip, String serviceRepoName, int port, String revision, Tags tags) {
+	public ServiceInstance(String service, String ip, String serviceRepoName, int port, String revision, Tags tags) {
+		this.service = service;
 		this.ip = ip;
 		this.serviceRepoName = serviceRepoName;
 		this.port = port;
 		this.revision = revision;
 		this.tags = tags;
 		this.lastCheckIn = String.valueOf(System.currentTimeMillis());
+	}
+	
+	@JsonProperty("service")
+	public String getService() {
+		return service;
 	}
 	
 	@JsonProperty("last_check_in")

@@ -18,6 +18,7 @@ public class ServiceRegistryTest {
 	public void testRegistryCreation() {
 		ServiceRegistry reg = new ServiceRegistry();
 
+		String service = "cat";
 		String ip = "127.0.0.1";
 		String serviceRepoName = "foo";
 		String revision = "1213";
@@ -30,8 +31,8 @@ public class ServiceRegistryTest {
 
 		Tags tags = new Tags(az, region, instanceId, canary, loadBalancingWeight);
 
-		ServiceInstance instance1 = new ServiceInstance(ip, serviceRepoName, 8888, revision, tags);
-		ServiceInstance instance2 = new ServiceInstance(ip, serviceRepoName, 9999, revision, tags);
+		ServiceInstance instance1 = new ServiceInstance(service, ip, serviceRepoName, 8888, revision, tags);
+		ServiceInstance instance2 = new ServiceInstance(service, ip, serviceRepoName, 9999, revision, tags);
 		reg.add("foo", instance1);
 		reg.add("foo", instance2);
 		
@@ -39,8 +40,8 @@ public class ServiceRegistryTest {
 		Set<ServiceInstance> actualSet = reg.get("foo");
 		assertEquals(expectedSet, actualSet);
 		
-		instance1 = new ServiceInstance(ip, serviceRepoName, 8888, revision, tags);
-		instance2 = new ServiceInstance(ip, serviceRepoName, 9999, revision, tags);
+		instance1 = new ServiceInstance(service, ip, serviceRepoName, 8888, revision, tags);
+		instance2 = new ServiceInstance(service, ip, serviceRepoName, 9999, revision, tags);
 		reg.add("bar", instance1);
 		reg.add("bar", instance2);
 		
