@@ -70,6 +70,11 @@ public class Registration {
 	@Produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ServiceMetadata fetchServiceInstances(
 			@ApiParam(name = "service", value = "Service for which operation is performed.", required = true) @PathParam("service") final String service) {
+		
+		if (service == null) {
+			throw new BadRequestException();
+		}
+		
 		Set<ServiceInstance> instances = registry.get(service);
 		return new ServiceMetadata(environment.getType(), service,
 				instances.toArray(new ServiceInstance[instances.size()]));
@@ -80,7 +85,11 @@ public class Registration {
 	@ApiOperation(value = "Fetches service instances for the given service", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ServiceRepoMetadata fetchServiceInstancesByServiceRepoName(
 			@ApiParam(name = "service_repo_name", value = "Service for which operation is performed.", required = true) @PathParam("service_repo_name") final String serviceRepo) {
-		System.out.println("service repo " + serviceRepo);
+
+		if (serviceRepo == null) {
+			throw new BadRequestException();
+		}
+
 		Set<ServiceInstance> instances = registry.getByRepo(serviceRepo);
 		return new ServiceRepoMetadata(environment.getType(), serviceRepo,
 				instances.toArray(new ServiceInstance[instances.size()]));
