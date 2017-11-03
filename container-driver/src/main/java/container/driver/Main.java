@@ -18,8 +18,14 @@ public class Main {
 	private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
 	public static void main(String[] args) throws URISyntaxException, MalformedURLException {
-		
+
 		logger.info("Starting " + Main.class.getSimpleName());
+
+		String war = args[0];
+		File f = new File(war);
+		if (f.exists() && !f.isDirectory()) {
+			logger.info("Loading war = " + war);
+		}
 
 		for (ClassLoader cl = Main.class.getClassLoader(); cl != null; cl = cl.getParent()) {
 			for (URL url : ((URLClassLoader) cl).getURLs()) {
@@ -32,9 +38,9 @@ public class Main {
 		acac.scan("container.driver.configuration");
 		acac.refresh();
 
+		WebAppMetadata metadata = new WebAppMetadataImpl(new File(war), Integer.getInteger("port", 8888));
+
 		WebContainer wc = (WebContainer) acac.getBean("Jetty");
-		WebAppMetadata metadata = (WebAppMetadata) acac.getBean("WebAppMetadata");
-		
 		wc.start(metadata, acac);
 	}
 
