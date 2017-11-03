@@ -1,6 +1,5 @@
 package components;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Tags {
@@ -72,4 +71,6 @@ public class Tags {
 		return "Tags [az=" + az + ", region=" + region + ", instanceId=" + instanceId + ", canary=" + canary
 				+ ", loadBalancingWeight=" + loadBalancingWeight + "]";
 	}
+	
+	
 }
