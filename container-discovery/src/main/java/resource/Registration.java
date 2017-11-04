@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 
@@ -63,7 +64,7 @@ public class Registration {
 			throws JsonParseException, JsonMappingException, IOException {
 
 		try {
-			
+
 			logger.info(String.format("%s %d %s %s %s", service, port, ip, revision, json));
 			String url = "/v1/registration/" + service;
 
@@ -118,6 +119,19 @@ public class Registration {
 		Set<ServiceInstance> instances = registry.getByRepo(serviceRepo);
 		return new ServiceRepoMetadata(environment.getType(), serviceRepo,
 				instances.toArray(new ServiceInstance[instances.size()]));
+	}
+
+	@DELETE
+	@Path("{service}/{ip_address}")
+	public void deleteService(
+			@ApiParam(name = "service", value = "Service for which operation is performed.", required = true) @PathParam("service") final String service,
+			@ApiParam(name = "ip_address", value = "ip_address of service to be deleted", required = true) @PathParam("ip_address") final String ipAddress) {
+
+		if (!registry.delete(service, ipAddress)) {
+			throw new BadRequestException(String.format(
+					"Attempted to delete entry corresponding to service = %s, ip = %s, but a matching entry was not present",
+					service, ipAddress));
+		}
 	}
 
 	private void notNull(Object o, String message) {

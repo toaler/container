@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
 
 import org.springframework.stereotype.Component;
 
@@ -46,5 +47,21 @@ public class ServiceRegistry {
 
 	public Set<ServiceInstance> getByRepo(String repo) {
 		return registryByRepo.getOrDefault(repo, EMPTY);
+	}
+
+	public boolean delete(String service, String ip) {
+
+		Set<ServiceInstance> sis = registry.get(service);
+		if (sis == null) {
+			return false;
+		}
+
+		ServiceInstance si = sis.stream().filter(i -> i.getIp().equals(ip)).findFirst().get();
+		if (si == null) {
+			return false;
+		}
+		
+		sis.remove(si);
+		return true;
 	}
 }
