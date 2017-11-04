@@ -1,5 +1,6 @@
 package resource.config;
 
+
 import javax.servlet.ServletContext;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Context;
@@ -12,11 +13,12 @@ import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
 import io.swagger.jaxrs.config.BeanConfig;
 
-@ApplicationPath("rest")
+@ApplicationPath("/v1")
 @SwaggerDefinition(tags = { @Tag(name = "Registration", description = "Registration operations") })
 public class JerseyResourceConfig extends ResourceConfig {
 
 	public JerseyResourceConfig(@Context ServletContext context) {
+		
 		System.out.println("JerseyResourceConfig");
 		WebApplicationContext appCtx = WebApplicationContextUtils.getWebApplicationContext(context);
 		register(appCtx.getBean("Registration"));
@@ -27,7 +29,7 @@ public class JerseyResourceConfig extends ResourceConfig {
 		register(io.swagger.jaxrs.listing.SwaggerSerializers.class);
 
 		BeanConfig beanConfig = new BeanConfig();
-		beanConfig.setBasePath("/container-discovery/rest");
+		beanConfig.setBasePath("/v1");
 		beanConfig.setVersion("0.0.1");
 		beanConfig.setTitle("Container Discovery");
 		beanConfig.setTitle("Implementation of Envoy SDS API");

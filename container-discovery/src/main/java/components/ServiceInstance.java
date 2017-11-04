@@ -31,7 +31,7 @@ public class ServiceInstance {
 		return lastCheckIn;
 	}
 
-	@JsonProperty("ip")
+	@JsonProperty("ip_address")
 	public String getIp() {
 		return ip;
 	}

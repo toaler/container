@@ -14,11 +14,6 @@ import org.springframework.context.annotation.Scope;
 @Import(JettyWebContainer.class)
 public class JettyConfiguration {
 
-//	@Bean(name = "Jetty")
-//	public WebContainer getJetty() {
-//		return new JettyWebContainer();
-//	}
-	
 	@Bean
 	@Scope("prototype")
 	Logger logger(InjectionPoint injectionPoint){

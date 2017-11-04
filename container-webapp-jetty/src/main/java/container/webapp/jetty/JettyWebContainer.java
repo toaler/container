@@ -1,13 +1,6 @@
 package container.webapp.jetty;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileSystem;
-import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 
 import org.eclipse.jetty.alpn.ALPN;
 import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
@@ -43,7 +36,7 @@ import container.webapp.api.WebContainer;
 @Component("Jetty")
 public class JettyWebContainer implements WebContainer {
 	
-    private static Logger logger;
+    private Logger logger;
     
     public JettyWebContainer(Logger logger) {
         this.logger = logger;
@@ -143,64 +136,12 @@ public class JettyWebContainer implements WebContainer {
 
 			server.start();
 
-			//server.dump(System.err);
+			server.dump(System.err);
 
 			server.join();
 
 		} catch (Exception x) {
 			throw new RuntimeException(x);
 		}
-	}
-
-	private static URI findWebResourceBase(ClassLoader classLoader) {
-		String webResourceRef = "WEB-INF/web.xml";
-
-		try {
-			// Look for resource in classpath (best choice when working with
-			// archive jar/war file)
-			URL webXml = classLoader.getResource('/' + webResourceRef);
-			if (webXml != null) {
-				URI uri = webXml.toURI().resolve("..").normalize();
-				System.err.printf("WebResourceBase (Using ClassLoader reference) %s%n", uri);
-				return uri;
-			}
-		} catch (URISyntaxException e) {
-			throw new RuntimeException("Bad ClassPath reference for: " + webResourceRef, e);
-		}
-
-		// Look for resource in common file system paths
-		try {
-			Path pwd = new File(System.getProperty("user.dir")).toPath().toRealPath();
-			FileSystem fs = pwd.getFileSystem();
-
-			// Try the generated maven path first
-			PathMatcher matcher = fs.getPathMatcher("glob:**/embedded-servlet-*");
-			try (DirectoryStream<Path> dir = java.nio.file.Files.newDirectoryStream(pwd.resolve("target"))) {
-				for (Path path : dir) {
-					if (java.nio.file.Files.isDirectory(path) && matcher.matches(path)) {
-						// Found a potential directory
-						Path possible = path.resolve(webResourceRef);
-						// Does it have what we need?
-						if (java.nio.file.Files.exists(possible)) {
-							URI uri = path.toUri();
-							System.err.printf("WebResourceBase (Using discovered /target/ Path) %s%n", uri);
-							return uri;
-						}
-					}
-				}
-			}
-
-			// Try the source path next
-			Path srcWebapp = pwd.resolve("src/main/webapp/" + webResourceRef);
-			if (java.nio.file.Files.exists(srcWebapp)) {
-				URI uri = srcWebapp.getParent().toUri();
-				System.err.printf("WebResourceBase (Using /src/main/webapp/ Path) %s%n", uri);
-				return uri;
-			}
-		} catch (Throwable t) {
-			throw new RuntimeException("Unable to find web resource in file system: " + webResourceRef, t);
-		}
-
-		throw new RuntimeException("Unable to find web resource ref: " + webResourceRef);
 	}
 }

@@ -1,16 +1,17 @@
 package container.driver.configuration;
 
-import container.webapp.api.WebContainer;
-import container.webapp.tomcat.TomcatWebContainer;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 
 @Configuration
 public class TomcatConfiguration {
-
-	@Bean(name = "Tomcat")
-	public WebContainer getTomcat() {
-		return new TomcatWebContainer();
+	@Bean
+	@Scope("prototype")
+	Logger logger(InjectionPoint injectionPoint) {
+		return LoggerFactory.getLogger(injectionPoint.getMethodParameter().getContainingClass());
 	}
 }

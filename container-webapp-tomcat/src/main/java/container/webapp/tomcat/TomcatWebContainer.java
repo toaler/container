@@ -6,7 +6,6 @@ import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import container.webapp.api.WebAppMetadata;
@@ -14,7 +13,11 @@ import container.webapp.api.WebContainer;
 
 public class TomcatWebContainer implements WebContainer {
 
-	private static final Logger logger = LoggerFactory.getLogger(TomcatWebContainer.class);
+	private Logger logger;
+
+	public TomcatWebContainer(Logger logger) {
+		this.logger = logger;
+	}
 
 	@Override
 	public void start(WebAppMetadata metadata, ApplicationContext acac) {
@@ -29,7 +32,7 @@ public class TomcatWebContainer implements WebContainer {
 			sb.append("  |____| \\____/|__|_|  /\\___  >____  /__|  \n");
 			sb.append("                     \\/     \\/     \\/      \n");
 
-			System.out.println(sb.toString());
+			logger.info(sb.toString());
 
 			Tomcat tomcat = new Tomcat();
 

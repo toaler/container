@@ -20,28 +20,30 @@ public class ServiceRegistry {
 	}
 
 	public void add(String serviceName, ServiceInstance instance) {
-		
+
 		Set<ServiceInstance> services = registry.get(serviceName);
 		if (services == null) {
 			registry.put(serviceName, services = new HashSet<ServiceInstance>());
 		}
 		services.remove(instance);
 		services.add(instance);
-		
-		
+
 		String repo = instance.getServiceRepoName();
-		services = registryByRepo.get(repo);
-		if (services == null) {
-			registryByRepo.put(repo, services = new HashSet<ServiceInstance>());
+
+		if (repo != null) {
+			services = registryByRepo.get(repo);
+			if (services == null) {
+				registryByRepo.put(repo, services = new HashSet<ServiceInstance>());
+			}
+			services.remove(instance);
+			services.add(instance);
 		}
-		services.remove(instance);
-		services.add(instance);
 	}
 
 	public Set<ServiceInstance> get(String serviceName) {
 		return registry.getOrDefault(serviceName, EMPTY);
 	}
-	
+
 	public Set<ServiceInstance> getByRepo(String repo) {
 		return registryByRepo.getOrDefault(repo, EMPTY);
 	}

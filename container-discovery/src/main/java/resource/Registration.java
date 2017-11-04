@@ -13,6 +13,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
@@ -32,10 +33,16 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 @Component(value = "Registration")
-@Path("/v1/registration")
+@Path("/registration")
 @Api(tags = "Registration")
 @Consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 public class Registration {
+	private Logger logger;
+
+	public Registration(Logger logger) {
+		this.logger = logger;
+	}
+
 	@Autowired
 	private ServiceRegistry registry;
 
@@ -45,23 +52,37 @@ public class Registration {
 	@POST
 	@Path("{service}")
 	@ApiOperation(value = "Registers a service with discovery", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public void registerService(
 			@ApiParam(name = "service", value = "Service for which operation is performed.", required = true) @PathParam("service") final String service,
 			@ApiParam(name = "ip", value = "ip address of the host.", required = true) @QueryParam("ip") final String ip,
 			@ApiParam(name = "service_repo_name", value = "service repository name, can be used for quick search", required = false) @QueryParam("service_repo_name") final String serviceRepoName,
 			@ApiParam(name = "port", value = "port on which the host expects connections, Envoy will connect to this port", required = true) @QueryParam("port") final Integer port,
 			@ApiParam(name = "revision", value = "SHA of the revision the service currently running", required = true) @QueryParam("revision") final String revision,
-			@ApiParam(name = "service_params", value = "JSON in the following format, see https://github.com/lyft/discovery#tags-json for expections", required = true) @QueryParam("service_params") String json)
+			@ApiParam(name = "tags", value = "JSON in the following format, see https://github.com/lyft/discovery#tags-json for expections", required = true) @QueryParam("tags") String json)
 			throws JsonParseException, JsonMappingException, IOException {
 
-		if (service == null || ip == null || port == null || revision == null || json == null) {
-			throw new BadRequestException();
+		try {
+			
+			logger.info(String.format("%s %d %s %s %s", service, port, ip, revision, json));
+			String url = "/v1/registration/" + service;
+
+			notNull(service, url);
+			notNull(ip, url);
+			notNull(port, url);
+			notNull(revision, url);
+			notNull(json, url);
+
+			logger.info(String.format("POST %s", url));
+
+			ObjectMapper mapper = new ObjectMapper();
+			Tags tags = mapper.readValue(json, Tags.class);
+			ServiceInstance instance = new ServiceInstance(service, ip, serviceRepoName, port, revision, tags);
+			registry.add(service, instance);
+		} catch (Exception x) {
+			logger.error(x.getMessage(), x);
+			throw x;
 		}
-		
-		ObjectMapper mapper = new ObjectMapper();
-		Tags tags = mapper.readValue(json, Tags.class);
-		ServiceInstance instance = new ServiceInstance(service, ip, serviceRepoName, port, revision, tags);
-		registry.add(service, instance);
 	}
 
 	@GET
@@ -70,16 +91,18 @@ public class Registration {
 	@Produces(MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ServiceMetadata fetchServiceInstances(
 			@ApiParam(name = "service", value = "Service for which operation is performed.", required = true) @PathParam("service") final String service) {
-		
+
 		if (service == null) {
 			throw new BadRequestException();
 		}
-		
+
+		logger.info("GET /v1/registration/" + service);
+
 		Set<ServiceInstance> instances = registry.get(service);
 		return new ServiceMetadata(environment.getType(), service,
 				instances.toArray(new ServiceInstance[instances.size()]));
 	}
-	
+
 	@GET
 	@Path("repo/{service_repo_name}")
 	@ApiOperation(value = "Fetches service instances for the given service", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -90,10 +113,17 @@ public class Registration {
 			throw new BadRequestException();
 		}
 
+		logger.info("GET /v1/registration/repo/" + serviceRepo);
+
 		Set<ServiceInstance> instances = registry.getByRepo(serviceRepo);
 		return new ServiceRepoMetadata(environment.getType(), serviceRepo,
 				instances.toArray(new ServiceInstance[instances.size()]));
 	}
-	
-	
+
+	private void notNull(Object o, String message) {
+		if (o == null) {
+			throw new BadRequestException();
+		}
+	}
+
 }

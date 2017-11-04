@@ -8,6 +8,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -22,14 +24,13 @@ public class Main {
 		logger.info("Starting " + Main.class.getSimpleName());
 
 		String war = args[0];
-		File f = new File(war);
-		if (f.exists() && !f.isDirectory()) {
+		File warFile = new File(war);
+		if (warFile.exists() && !warFile.isDirectory()) {
 			logger.info("Loading war = " + war);
 		}
 
 		for (ClassLoader cl = Main.class.getClassLoader(); cl != null; cl = cl.getParent()) {
 			for (URL url : ((URLClassLoader) cl).getURLs()) {
-				URL[] urls = ((URLClassLoader) cl).getURLs();
 				logger.info(cl.getClass().getName() + " classpath = " + url.getFile());
 			}
 		}
@@ -37,11 +38,19 @@ public class Main {
 		AnnotationConfigApplicationContext acac = new AnnotationConfigApplicationContext();
 		acac.scan("container.driver.configuration");
 		acac.refresh();
-
-		WebAppMetadata metadata = new WebAppMetadataImpl(new File(war), Integer.getInteger("port", 8888));
+		
+		WebAppMetadata metadata = new WebAppMetadataImpl(warFile, Integer.getInteger("wc.port", 8888), System.getProperty("wc.context.path", getContextMapping(warFile)));
 
 		WebContainer wc = (WebContainer) acac.getBean("Jetty");
 		wc.start(metadata, acac);
+	}
+
+	private static String getContextMapping(File warFile) {
+		Matcher matcher = Pattern.compile("^\\D*(\\d)").matcher(warFile.getName());
+		matcher.find();
+		String w = matcher.group();
+		String contextPath = "/" + w.substring(0, w.length() - 2);
+		return contextPath;
 	}
 
 }

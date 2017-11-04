@@ -1,8 +1,6 @@
 package container.driver;
 
 import java.io.File;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import container.webapp.api.WebAppMetadata;
 
@@ -16,15 +14,11 @@ public class WebAppMetadataImpl implements WebAppMetadata {
 	private final File war;
 	private final int port;
 	
-	public WebAppMetadataImpl(final File war, final int port) {
+	public WebAppMetadataImpl(final File war, final int port, String contextPath) {
 		this.war = war;
 		this.port = port;
-		
-		String filename = war.getName();
-		Matcher matcher = Pattern.compile("^\\D*(\\d)").matcher(filename);
-		matcher.find();
-		String w = matcher.group();
-		contextPath = "/" + w.substring(0, w.length() - 2);
+		this.contextPath = contextPath;
+
 	}
 
 	@Override
