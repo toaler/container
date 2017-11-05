@@ -127,6 +127,9 @@ public class Registration {
 			@ApiParam(name = "service", value = "Service for which operation is performed.", required = true) @PathParam("service") final String service,
 			@ApiParam(name = "ip_address", value = "ip_address of service to be deleted", required = true) @PathParam("ip_address") final String ipAddress) {
 
+		
+		logger.info("DELETE /v1/registration/" + service + "/" + ipAddress);
+		
 		if (!registry.delete(service, ipAddress)) {
 			throw new BadRequestException(String.format(
 					"Attempted to delete entry corresponding to service = %s, ip = %s, but a matching entry was not present",
