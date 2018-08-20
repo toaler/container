@@ -3,6 +3,8 @@ package configuration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import component.MyComponent;
+
 import service.impl.TimeServiceImpl;
 
 /**
@@ -12,7 +14,7 @@ import service.impl.TimeServiceImpl;
  *
  */
 @Configuration
-@Import(TimeServiceImpl.class)
+@Import({TimeServiceImpl.class, MyComponent.class})
 public class AppConfig {
 
 }
