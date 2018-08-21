@@ -24,7 +24,8 @@ import org.eclipse.jetty.webapp.MetaInfConfiguration;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.webapp.WebInfConfiguration;
 import org.eclipse.jetty.webapp.WebXmlConfiguration;
-import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -36,12 +37,10 @@ import container.webapp.api.WebContainer;
 @Component("Jetty")
 public class JettyWebContainer implements WebContainer {
 	
-    private Logger logger;
+	@Autowired
+	@Qualifier("logger")
+    private org.slf4j.Logger logger;
     
-    public JettyWebContainer(Logger logger) {
-        this.logger = logger;
-    }
-
 	@Override
 	public void start(WebAppMetadata metadata, ApplicationContext acac) {
 
