@@ -9,10 +9,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
-
+import com.salesforce.healthcheck.HealthCheckService;
+import com.salesforce.healthcheck.HealthCheckServiceImpl;
 import component.MyComponent;
-import service.impl.HealthCheckServiceImpl;
-import service.impl.TimeServiceImpl;
+import resource.Healthcheck;
 
 /**
  * Top level configuration responsible for wiring all Spring managed beans together.
@@ -21,14 +21,18 @@ import service.impl.TimeServiceImpl;
  *
  */
 @Configuration
-@Import({TimeServiceImpl.class, MyComponent.class, HealthCheckServiceImpl.class})
+@Import({MyComponent.class, Healthcheck.class})
 public class AppConfig {
-	
-	@Lazy
-	@Bean("logger")
-	@Scope("prototype")
-	public Logger getLogger(InjectionPoint injectionPoint) {
-		return LoggerFactory.getLogger(injectionPoint.getMember().getDeclaringClass());
-	}
-	
+
+    @Lazy
+    @Bean("logger")
+    @Scope("prototype")
+    public Logger getLogger(InjectionPoint injectionPoint) {
+        return LoggerFactory.getLogger(injectionPoint.getMember().getDeclaringClass());
+    }
+
+    @Bean("healthCheckService")
+    public HealthCheckService getHealthCheckService() {
+        return new HealthCheckServiceImpl();
+    }
 }

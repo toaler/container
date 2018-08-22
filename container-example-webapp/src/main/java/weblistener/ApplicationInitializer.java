@@ -2,7 +2,6 @@ package weblistener;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.WebApplicationInitializer;
@@ -18,5 +17,4 @@ public class ApplicationInitializer implements WebApplicationInitializer {
 		servletContext.addListener(new ContextLoaderListener(context));
 		servletContext.setInitParameter("contextConfigLocation", "configuration");
 	}
-
 }

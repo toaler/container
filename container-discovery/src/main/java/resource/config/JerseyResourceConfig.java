@@ -17,8 +17,12 @@ import io.swagger.jaxrs.config.BeanConfig;
 @SwaggerDefinition(tags = { @Tag(name = "Registration", description = "Registration operations") })
 public class JerseyResourceConfig extends ResourceConfig {
 
+    public JerseyResourceConfig() {
+        System.exit(1);
+    }
 	public JerseyResourceConfig(@Context ServletContext context) {
 		
+	    System.exit(1);
 		System.out.println("JerseyResourceConfig");
 		WebApplicationContext appCtx = WebApplicationContextUtils.getWebApplicationContext(context);
 		register(appCtx.getBean("Registration"));
