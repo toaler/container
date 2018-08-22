@@ -1,7 +1,6 @@
 package container.webapp.jetty;
 
 import java.net.URL;
-
 import org.eclipse.jetty.alpn.ALPN;
 import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
 import org.eclipse.jetty.annotations.AnnotationConfiguration;
@@ -16,6 +15,7 @@ import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
+import org.eclipse.jetty.server.handler.ShutdownHandler;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.Configuration;
 import org.eclipse.jetty.webapp.FragmentConfiguration;
@@ -28,9 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-
 import com.google.common.io.Files;
-
 import container.webapp.api.WebAppMetadata;
 import container.webapp.api.WebContainer;
 
@@ -132,6 +130,7 @@ public class JettyWebContainer implements WebContainer {
 			context.setParentLoaderPriority(true);
 
 			server.setHandler(context);
+			server.setHandler(new ShutdownHandler("elmo"));
 
 			server.start();
 
