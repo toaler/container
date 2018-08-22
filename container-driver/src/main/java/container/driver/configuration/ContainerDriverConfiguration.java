@@ -17,4 +17,14 @@ public class ContainerDriverConfiguration {
 	public Logger getLogger(InjectionPoint injectionPoint) {
 		return LoggerFactory.getLogger(injectionPoint.getMember().getDeclaringClass());
 	}
+	
+	@Bean("shutdownToken")
+	public String getShutdownToken() {
+	    return "elmo";
+	}
+	
+	@Bean("port")
+	public int getPort() {
+	    return Integer.getInteger("wc.port", 8888);
+	}
 }

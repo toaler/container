@@ -43,7 +43,7 @@ public class Main {
         acac.refresh();
 
         WebAppMetadata metadata =
-                new WebAppMetadataImpl(warFile, Integer.getInteger("wc.port", 8888),
+                new WebAppMetadataImpl(warFile,
                         System.getProperty("wc.context.path", getContextMapping(warFile)));
 
         WebContainer wc = (WebContainer) acac.getBean("Jetty");
