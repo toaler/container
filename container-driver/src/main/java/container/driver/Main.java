@@ -24,6 +24,12 @@ public class Main {
     public static void main(String[] args) throws URISyntaxException, MalformedURLException {
         String pidFile = null;
         try {
+            
+            if (args.length == 0) {
+                logger.error("war file not provided, exiting");
+                System.exit(1);
+            }
+
             installSLF4JBridgeHandler();
             logger.info("Starting " + Main.class.getSimpleName());
 
