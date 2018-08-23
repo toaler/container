@@ -1,4 +1,4 @@
-container-driver/src/main/java/container/driver/Main.javapackage container.webapp.jetty;
+package container.webapp.jetty;
 
 import java.net.URL;
 import org.eclipse.jetty.alpn.ALPN;
