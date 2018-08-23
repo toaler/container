@@ -1,5 +1,9 @@
 SET DAEMON 5
-       
+SET LOGFILE /tmp/monit.log
+SET HTTPD PORT 2812
+  USE ADDRESS 127.0.0.1
+  ALLOW 127.0.0.1
+
 check process app with pidfile /tmp/container-example-webapp-0.0.1-SNAPSHOT.pid
    start program = "/bin/bash -c '/Users/btoal/git/container/container-driver/run.sh start /Users/btoal/git/container/container-example-webapp/target/container-example-webapp-0.0.1-SNAPSHOT.war'"
    stop  program = "/bin/bash -c '/Users/btoal/git/container/container-driver/run.sh stop'"
