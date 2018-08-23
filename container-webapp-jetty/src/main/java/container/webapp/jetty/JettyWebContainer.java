@@ -1,4 +1,4 @@
-package container.webapp.jetty;
+container-driver/src/main/java/container/driver/Main.javapackage container.webapp.jetty;
 
 import java.net.URL;
 import org.eclipse.jetty.alpn.ALPN;
@@ -45,15 +45,7 @@ public class JettyWebContainer implements WebContainer {
     public void start(WebAppMetadata metadata, ApplicationContext acac) {
 
         try {
-            StringBuilder sb = new StringBuilder();
-            sb.append("\n     ____.       __    __          \n");
-            sb.append("    |    | _____/  |__/  |_ ___.__.\n");
-            sb.append("    |    |/ __ \\   __\\   __<   |  |\n");
-            sb.append("/\\__|    \\  ___/|  |  |  |  \\___  |\n");
-            sb.append("\\________|\\___  >__|  |__|  / ____|\n");
-            sb.append("              \\/            \\/\n");
-
-            logger.info(sb.toString());
+            logger.info("[startup] - starting Jetty application container");
 
             Server server = new Server();
 
@@ -144,9 +136,21 @@ public class JettyWebContainer implements WebContainer {
                     new ShutdownHandler((String) acac.getBean("shutdownToken")), context});
             server.setHandler(handlers);
 
+            
             server.start();
 
-            server.dump(System.err);
+            logger.info("[startup] - started Jetty application container");
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("\n     ____.       __    __          \n");
+            sb.append("    |    | _____/  |__/  |_ ___.__.\n");
+            sb.append("    |    |/ __ \\   __\\   __<   |  |\n");
+            sb.append("/\\__|    \\  ___/|  |  |  |  \\___  |\n");
+            sb.append("\\________|\\___  >__|  |__|  / ____|\n");
+            sb.append("              \\/            \\/\n");
+            sb.append("\nJetty configuration: ");
+            server.dump(sb);
+            logger.info(sb.toString());
 
             server.join();
 
