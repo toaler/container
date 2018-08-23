@@ -4,9 +4,17 @@
 JAVA_HOME=/Users/btoal/blt/tools/Darwin/jdk/jdk1.8.0_66_x64
 DRIVER_HOME=/Users/btoal/git/container/container-driver
 LOG=`date +%Y%m%d%H%M%S`.log
+#TODO GRAB PIDFILE NAME FROM $1
+PIDFILE=/tmp/container-example-webapp-0.0.1-SNAPSHOT.pid
 
 start() {
-  nohup ${JAVA_HOME}/bin/java -Dwc.context.path=/ -Xbootclasspath/p:${DRIVER_HOME}/lib/alpn-boot-8.1.11.v20170118.jar  -cp target/container-driver-0.0.1-SNAPSHOT.jar:${DRIVER_HOME}/lib/* container.driver.Main $1 | tee ${LOG} &
+  if pgrep -F ${PIDFILE}
+  then
+    echo "Application already running"
+  else
+    nohup ${JAVA_HOME}/bin/java -Dwc.context.path=/ -Xbootclasspath/p:${DRIVER_HOME}/lib/alpn-boot-8.1.11.v20170118.jar -cp ${DRIVER_HOME}/target/container-driver-0.0.1-SNAPSHOT.jar:${DRIVER_HOME}/lib/* container.driver.Main $1 | tee ${LOG} &
+    echo "Started application"
+  fi 
 }
 
 stop() {
