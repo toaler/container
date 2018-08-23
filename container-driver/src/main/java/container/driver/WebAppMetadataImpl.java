@@ -7,10 +7,12 @@ public class WebAppMetadataImpl implements WebAppMetadata {
 
     private final File war;
     private final String contextMapping;
+    private final String webAppName;
 
 
 
-    public WebAppMetadataImpl(final File war, String contextMapping) {
+    public WebAppMetadataImpl(final String webAppName, final File war, String contextMapping) {
+        this.webAppName = webAppName;
         this.war = war;
         this.contextMapping = contextMapping;
     }
@@ -23,6 +25,11 @@ public class WebAppMetadataImpl implements WebAppMetadata {
     @Override
     public String getContextPath() {
         return contextMapping;
+    }
+    
+    @Override
+    public String getWebAppName() {
+        return webAppName;
     }
 
     @Override

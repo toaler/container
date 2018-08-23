@@ -6,4 +6,6 @@ public interface WebAppMetadata {
 	File getWar();
 
     String getContextPath();
+
+    String getWebAppName();
 }
