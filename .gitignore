@@ -2,4 +2,6 @@
 .settings
 .project
 *.swp
+*.out
+
 container-driver/src/main/resources/ssl/keystore
