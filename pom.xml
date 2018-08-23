@@ -13,7 +13,6 @@
 		<module>container-webapp-tomcat</module>
 		<module>container-driver</module>
 		<module>container-example-webapp</module>
-		<module>container-discovery</module>
 	</modules>
 
 	<properties>
