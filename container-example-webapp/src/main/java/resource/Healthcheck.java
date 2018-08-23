@@ -7,6 +7,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +38,11 @@ public class Healthcheck {
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public Response getStatus() {
+    public Response getStatus(@QueryParam("sourcename") String sourceName) {
 
         try {
             String status = hcService.getStatus();
-            logger.info("status = " + status);
+            logger.info("status={}, sourcename={}", status, sourceName);
 
             if (status.equals("ALIVE")) {
                 return Response.status(Response.Status.OK).entity("ALIVE").build();
