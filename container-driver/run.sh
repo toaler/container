@@ -23,7 +23,15 @@ start() {
 }
 
 stop() {
-  curl -X POST 'http://localhost:8888/shutdown?token=elmo'
+  if curl --connect-timeout 5 --max-time 5 -X POST 'http://localhost:8888/shutdown?token=elmo'; then
+    echo "Issued shutdown command successfully, app shutdown will occur asynchronously"
+    # TODO write code to wait for process to be killed for X seconds before
+    # calling SIGTERM then SIGKILL
+  else
+    pid=`cat ${PIDFILE}`
+    echo "Attempt to call shutdown endpoint timed out, kill -9 ${pid} will be issued"
+    kill -9 ${pid}
+  fi
 }
 
 status() {
