@@ -7,6 +7,13 @@ public class Main {
 
     public static void main(String[] args) {
         final Logger logger = LoggerFactory.getLogger(Main.class);
+
+        Runtime.getRuntime().addShutdownHook(new Thread("Shutdown Thread") {
+        @Override
+            public void run() {
+                logger.info("Shutting down.");
+            }   
+        }); 
         
         try {
             if (args.length == 0) {
