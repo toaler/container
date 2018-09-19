@@ -8,6 +8,7 @@ DRIVER_HOME=/Users/btoal/git/container/container-driver
 #TODO GRAB PIDFILE NAME FROM $1
 PIDFILE=/tmp/container-example-webapp-0.0.1-SNAPSHOT.pid
 CMD="${JAVA_HOME}/bin/java -Dwc.context.path=/ -Xbootclasspath/p:${DRIVER_HOME}/lib/alpn-boot-8.1.11.v20170118.jar -cp ${DRIVER_HOME}/target/container-driver-0.0.1-SNAPSHOT.jar:${DRIVER_HOME}/lib/* container.driver.Main"
+TOKEN=elmo
 
 declare -a levels=([DEBUG]=0 [INFO]=1 [WARN]=2 [ERROR]=3)
 script_logging_level="DEBUG"
@@ -37,7 +38,7 @@ log(){
   #check if level is enough
   (( ${levels[$log_priority]} < ${levels[$script_logging_level]} )) && return 2
 
-  printf "${log_priority} : ${log_message}\n"
+  printf '%-5s : %s\n' "${log_priority}" "${log_message}"
 }
 
 start() {
@@ -68,24 +69,24 @@ graceful_shutdown() {
   pid=$1
   attempts=$2
 
-  echo "kill -SIGTERM ${pid}"
+  info "Attempting 'kill -SIGTERM ${pid}'"
   wait_for_process $pid $attempts
   if [  $? = "0" ]
   then
     info "Process ${pid} killed by SIGTERM, exiting."
-    exit 0
+    return 0
   fi
 
-  echo "kill -SIGKILL ${pid}"
+  info "Attempting 'kill -SIGKILL ${pid}'"
   wait_for_process $pid $attempts
   if [ $? = "0" ]
   then
     info "Process ${pid} killed by SIGKILL, exiting."
-    exit 0
+    return 0
   fi
 
   error "Could not kill ${pid}, exiting"
-  exit 1
+  return 1
 }
 
 wait_for_process() {
@@ -99,7 +100,6 @@ wait_for_process() {
       info "$1 is dead"
       return 0; 
     fi
-    debug "SIGTERM waiting ${i}"
     i=$((i-1))
     sleep 1
   done
@@ -110,13 +110,22 @@ wait_for_process() {
 stop() {
   pid=`cat ${PIDFILE}`
 
-  if curl --connect-timeout 5 --max-time 5 -X POST 'http://localhost:8888/shutdown?token=elmo'; then
+  if curl --connect-timeout 5 --max-time 5 -X POST "http://localhost:8888/shutdown?token=${TOKEN}"; then
     info "Issued shutdown command successfully, app shutdown will occur asynchronously"
     # TODO write code to wait for process to be killed for X seconds before
     # calling SIGTERM then SIGKILL
+
+    wait_for_process $pid 5 
+    if [  $? = "0" ]
+    then
+      info "Process ${pid} killed by SIGTERM, exiting."
+      return 0
+    fi
+
+    info "Application still running even after shutdown management API attempt, start graceful shutdown"
     graceful_shutdown ${pid} 5 
   else
-    echo "Attempt to call shutdown endpoint timed out, kill -9 ${pid} will be issued"
+    info "Attempt to call shutdown endpoint timed out, kill -9 ${pid} will be issued"
     graceful_shutdown ${pid} 5 
   fi
 }
@@ -136,6 +145,7 @@ start)
   ;;
 stop)
   stop
+  info "process successfully stopped"
   ;;
 status)
   status
