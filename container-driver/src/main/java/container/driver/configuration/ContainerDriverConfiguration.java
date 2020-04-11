@@ -23,8 +23,18 @@ public class ContainerDriverConfiguration {
 	    return "elmo";
 	}
 	
-	@Bean("port")
-	public int getPort() {
-	    return Integer.getInteger("wc.port", 8888);
+	@Bean("httpOnePort")
+	public int getHttpOnePort() {
+	    return Integer.getInteger("container.driver.configuration.h1.port", 8888);
+	}
+
+	@Bean("httpsOnePort")
+	public int getHttpsOnePort() {
+	    return Integer.getInteger("container.driver.configuration.h1.port", 8443);
+	}
+	
+	@Bean("httpTwoPort")
+	public int getHttpTwoPort() {
+	    return Integer.getInteger("container.driver.configuration.h2.port", 8889);
 	}
 }

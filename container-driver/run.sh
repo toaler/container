@@ -3,8 +3,8 @@
 set +xv
 
 # run.sh <war>
-JAVA_HOME=/Users/btoal/blt/tools/Darwin/jdk/jdk1.8.0_66_x64
-DRIVER_HOME=/Users/btoal/git/container/container-driver
+PORT=8888
+DRIVER_HOME=${HOME}/git/container/container-driver
 #TODO GRAB PIDFILE NAME FROM $1
 PIDFILE=/tmp/container-example-webapp-0.0.1-SNAPSHOT.pid
 CMD="${JAVA_HOME}/bin/java -Dwc.context.path=/ -Xbootclasspath/p:${DRIVER_HOME}/lib/alpn-boot-8.1.11.v20170118.jar -cp ${DRIVER_HOME}/target/container-driver-0.0.1-SNAPSHOT.jar:${DRIVER_HOME}/lib/* container.driver.Main"
@@ -42,7 +42,7 @@ log(){
 }
 
 start() {
-  if pgrep -F ${PIDFILE}
+	if [ -f "${PIDFILE}" ] && [ $(pgrep -F "${PIDFILE}") ]
   then
     info "Application already running"
   else
@@ -70,6 +70,7 @@ graceful_shutdown() {
   attempts=$2
 
   info "Attempting 'kill -SIGTERM ${pid}'"
+  kill -SIGTERM ${pid}
   wait_for_process $pid $attempts
   if [  $? = "0" ]
   then
@@ -78,6 +79,7 @@ graceful_shutdown() {
   fi
 
   info "Attempting 'kill -SIGKILL ${pid}'"
+  kill -SIGKILL ${pid}
   wait_for_process $pid $attempts
   if [ $? = "0" ]
   then
@@ -110,7 +112,7 @@ wait_for_process() {
 stop() {
   pid=`cat ${PIDFILE}`
 
-  if curl --connect-timeout 5 --max-time 5 -X POST "http://localhost:8888/shutdown?token=${TOKEN}"; then
+  if curl --connect-timeout 5 --max-time 5 -X POST "http://localhost:${PORT}/shutdown?token=${TOKEN}"; then
     info "Issued shutdown command successfully, app shutdown will occur asynchronously"
     # TODO write code to wait for process to be killed for X seconds before
     # calling SIGTERM then SIGKILL

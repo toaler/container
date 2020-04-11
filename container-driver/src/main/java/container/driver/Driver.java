@@ -24,7 +24,7 @@ public class Driver {
         this.war = war;
     }
 
-    public void start() {
+    public void start(String containerBeanName) {
 
         installSLF4JBridgeHandler();
         logger.info("Starting " + Main.class.getSimpleName());
@@ -44,8 +44,7 @@ public class Driver {
         }
 
         AnnotationConfigApplicationContext acac = startIoc();
-
-        WebContainer wc = (WebContainer) acac.getBean("Jetty");
+        WebContainer wc = (WebContainer) acac.getBean(containerBeanName);
         wc.start(metadata, acac);
     }
 
@@ -76,6 +75,7 @@ public class Driver {
     private WebAppMetadata createWebAppMetatdata(String war) {
         File warFile = new File(war);
         String name = warFile.getName();
+        logger.info("warFile = " + name);
 
         String webAppName = name.substring(0, name.lastIndexOf("."));
 

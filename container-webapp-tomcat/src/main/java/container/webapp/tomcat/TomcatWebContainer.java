@@ -5,13 +5,24 @@ import org.apache.catalina.Host;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+
 import container.webapp.api.WebAppMetadata;
 import container.webapp.api.WebContainer;
 
+@Component("Tomcat")
 public class TomcatWebContainer implements WebContainer {
 
-    private Logger logger;
+    @Autowired
+    @Qualifier("logger")
+    private org.slf4j.Logger logger;
+    
+    @Autowired
+    @Qualifier("httpOnePort")
+    private Integer httpOnePort;
 
     public TomcatWebContainer(Logger logger) {
         this.logger = logger;
@@ -38,7 +49,7 @@ public class TomcatWebContainer implements WebContainer {
             tomcat.setBaseDir(docBase.getAbsolutePath());
 
             tomcat.setSilent(false);
-            tomcat.setPort(8080);
+            tomcat.setPort(httpOnePort);
 
             // init http connector
             tomcat.getConnector();

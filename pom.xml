@@ -164,16 +164,6 @@
 				<artifactId>jersey-guava</artifactId>
 				<version>2.26-b03</version>
 			</dependency>
-			<dependency>
-				<groupId>com.salesforce</groupId>
-				<artifactId>healthcheck-api</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>com.salesforce</groupId>
-				<artifactId>healthcheck-impl</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-			</dependency>
 			<!-- https://mvnrepository.com/artifact/junit/junit -->
 			<dependency>
 				<groupId>junit</groupId>

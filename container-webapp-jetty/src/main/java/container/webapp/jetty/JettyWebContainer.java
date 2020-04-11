@@ -40,6 +40,19 @@ public class JettyWebContainer implements WebContainer {
     @Autowired
     @Qualifier("logger")
     private org.slf4j.Logger logger;
+    
+    @Autowired
+    @Qualifier("httpOnePort")
+    private Integer httpOnePort;
+
+    @Autowired
+    @Qualifier("httpsOnePort")
+    private Integer httpsOnePort;
+    
+    @Autowired
+    @Qualifier("httpTwoPort")
+    private Integer httpTwoPort;
+
 
     @Override
     public void start(WebAppMetadata metadata, ApplicationContext acac) {
@@ -49,12 +62,9 @@ public class JettyWebContainer implements WebContainer {
 
             Server server = new Server();
 
-            int httpPort = (int) acac.getBean("port");
-            int httpsPort = 8443;
-
             // Setup HTTP Connector
             HttpConfiguration httpConf = new HttpConfiguration();
-            httpConf.setSecurePort(httpsPort);
+            httpConf.setSecurePort(httpsOnePort);
             httpConf.setSecureScheme("https");
             httpConf.setSendXPoweredBy(true);
             httpConf.setSendServerVersion(true);
@@ -62,7 +72,7 @@ public class JettyWebContainer implements WebContainer {
             // Establish the HTTP ServerConnector
             ServerConnector httpConnector =
                     new ServerConnector(server, new HttpConnectionFactory(httpConf));
-            httpConnector.setPort(httpPort);
+            httpConnector.setPort(httpOnePort);
             httpConnector.setIdleTimeout(5000);
             server.addConnector(httpConnector);
 
@@ -103,7 +113,7 @@ public class JettyWebContainer implements WebContainer {
             // HTTP/2 Connector
             ServerConnector http2Connector =
                     new ServerConnector(server, ssl, alpn, h2, new HttpConnectionFactory(httpsConf));
-            http2Connector.setPort(httpsPort);
+            http2Connector.setPort(httpTwoPort);
             ALPN.debug = true;
             server.addConnector(http2Connector);
 

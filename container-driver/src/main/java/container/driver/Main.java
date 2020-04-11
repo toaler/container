@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory;
 
 public class Main {
 
-    public static void main(String[] args) {
+    private static final String CONTAINER_TYPE_BEAN_NAME = System.getProperty("container.driver.type.bean.name", "Jetty");
+
+	public static void main(String[] args) {
         final Logger logger = LoggerFactory.getLogger(Main.class);
 
         Runtime.getRuntime().addShutdownHook(new Thread("Shutdown Thread") {
@@ -17,11 +19,18 @@ public class Main {
         
         try {
             if (args.length == 0) {
-                logger.error("war file not provided, exiting");
+                logger.error("War file not provided, exiting");
                 System.exit(1);
             }
+
+            if (!args[0].contains(".war")) {
+                logger.error("The war filename provided '" + args[0] + "' isn't a war, exiting");
+                System.exit(1);
+            }
+            
+            logger.info("War file provided = '" + args[0] + "'");
             Driver driver = new Driver(LoggerFactory.getLogger(Driver.class), args[0]);  
-            driver.start();
+            driver.start(CONTAINER_TYPE_BEAN_NAME);
         } catch (Exception e) {
             logger.error("Exception occured in main, exiting.", e);
         }

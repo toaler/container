@@ -13,7 +13,8 @@ import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import com.salesforce.healthcheck.HealthCheckService;
+
+import component.HealthCheckService;
 import util.Util;
 
 @Component(value = "HealthCheck")

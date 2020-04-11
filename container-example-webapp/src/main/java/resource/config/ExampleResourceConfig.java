@@ -33,6 +33,5 @@ public class ExampleResourceConfig extends ResourceConfig {
         beanConfig.setResourcePackage("resource");
         beanConfig.setPrettyPrint(true);
         beanConfig.setScan(true);
-
     }
 }
