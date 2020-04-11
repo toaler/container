@@ -36,12 +36,14 @@ public class Driver {
             System.exit(1);
         }
 
-        for (ClassLoader cl = Main.class.getClassLoader(); cl != null; cl = cl.getParent()) {
-            logger.info(cl.getClass().getName() + " classpath entries:");
-            for (URL url : ((URLClassLoader) cl).getURLs()) {
-                logger.info(url.getFile());
-            }
-        }
+		logger.info("classpath entries:");
+
+		String pathSeparator = System.getProperty("path.separator");
+		String[] classPathEntries = System.getProperty("java.class.path").split(pathSeparator);
+
+		for (String entry : classPathEntries) {
+			logger.info(entry);
+		}
 
         AnnotationConfigApplicationContext acac = startIoc();
         WebContainer wc = (WebContainer) acac.getBean(containerBeanName);
