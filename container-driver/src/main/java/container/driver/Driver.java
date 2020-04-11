@@ -25,6 +25,8 @@ public class Driver {
     }
 
     public void start(String containerBeanName) {
+    	
+    	try {
 
         installSLF4JBridgeHandler();
         logger.info("Starting " + Main.class.getSimpleName());
@@ -48,6 +50,11 @@ public class Driver {
         AnnotationConfigApplicationContext acac = startIoc();
         WebContainer wc = (WebContainer) acac.getBean(containerBeanName);
         wc.start(metadata, acac);
+        
+    	} catch (Throwable t) {
+    		logger.error("Error occured when attempting to start conatiner", t);
+    		throw t;
+    	}
     }
 
 

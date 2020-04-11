@@ -7,7 +7,7 @@ PORT=8888
 DRIVER_HOME=${HOME}/git/container/container-driver
 #TODO GRAB PIDFILE NAME FROM $1
 PIDFILE=/tmp/container-example-webapp-0.0.1-SNAPSHOT.pid
-CMD="${JAVA_HOME}/bin/java -Dwc.context.path=/ --patch-module java.base=target/libs/alpn-boot-8.1.6.v20151105.jar --add-exports java.base/org.eclipse.jetty.alpn=ALL-UNNAMED -cp ${DRIVER_HOME}/target/container-driver-0.0.1-SNAPSHOT.jar:${DRIVER_HOME}/lib/* container.driver.Main"
+CMD="${JAVA_HOME}/bin/java -Dwc.context.path=/ -cp ${DRIVER_HOME}/target/container-driver-0.0.1-SNAPSHOT.jar:${DRIVER_HOME}/lib/* container.driver.Main"
 TOKEN=elmo
 
 declare -a levels=([DEBUG]=0 [INFO]=1 [WARN]=2 [ERROR]=3)
