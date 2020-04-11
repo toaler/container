@@ -69,12 +69,7 @@ public class JettyWebContainer implements WebContainer {
             httpConf.setSendXPoweredBy(true);
             httpConf.setSendServerVersion(true);
 
-            // Establish the HTTP ServerConnector
-            ServerConnector httpConnector =
-                    new ServerConnector(server, new HttpConnectionFactory(httpConf));
-            httpConnector.setPort(httpOnePort);
-            httpConnector.setIdleTimeout(5000);
-            server.addConnector(httpConnector);
+
 
             // Find Keystore for SSL
             ClassLoader cl = JettyWebContainer.class.getClassLoader();
@@ -90,6 +85,20 @@ public class JettyWebContainer implements WebContainer {
             sslContextFactory.setKeyStorePassword("jettyjetty");
             sslContextFactory.setKeyManagerPassword("jettyjetty");
             sslContextFactory.setCipherComparator(HTTP2Cipher.COMPARATOR);
+            
+            // Establish the HTTP ServerConnector
+            ServerConnector httpConnector =
+                    new ServerConnector(server, new HttpConnectionFactory(httpConf));
+            httpConnector.setPort(httpOnePort);
+            httpConnector.setIdleTimeout(5000);
+            server.addConnector(httpConnector);
+            
+            // Establish the HTTPS ServerConnector
+            ServerConnector httpsConnector =
+                    new ServerConnector(server, sslContextFactory, new HttpConnectionFactory(httpConf));
+            httpsConnector.setPort(httpsOnePort);
+            httpsConnector.setIdleTimeout(5000);
+            server.addConnector(httpsConnector);
 
             // Setup HTTPS Configuration
             HttpConfiguration httpsConf = new HttpConfiguration(httpConf);
