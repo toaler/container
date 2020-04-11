@@ -18,11 +18,10 @@
 	<properties>
 		<logback.version>1.2.3</logback.version>
 		<slf4j-api.version>1.7.25</slf4j-api.version>
-		<alpn-boot-version>8.1.11.v20170118</alpn-boot-version>
-		<jersey2.version>2.26</jersey2.version>
+		<jersey2.version>2.30.1</jersey2.version>
 		<jaxrs.version>2.0.1</jaxrs.version>
 		<spring.version>4.3.10.RELEASE</spring.version>
-		<jersey.spring.version>2.26</jersey.spring.version>
+		<jersey.spring.version>2.30.1</jersey.spring.version>
 	</properties>
 
 	<dependencyManagement>
