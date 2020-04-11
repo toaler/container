@@ -6,4 +6,4 @@ target
 lib
 *log
 
-src/main/resources/ssl/keystore
+keystore
