@@ -7,7 +7,7 @@ mkdir -p ${dir}
 alias=container-driver
 validity=99999
 storepass=jettyjetty
-keypass=storepwd
+keypass=jettyjetty
 keystore=${dir}/keystore
 
 rm -rf ${keystore}
@@ -35,7 +35,7 @@ rm -rf ${keystore}
 
 keytool \
  -alias ${alias} \
- -genkeypair -keyalg RSA -keysize 2048 -validity ${validity} \
+ -genkeypair -keyalg RSA -keysize 2048 -sigalg SHA256withRSA -validity ${validity} \
  -dname "CN=*, OU=ID, O=org.bpt, L=Danville, S=CA, C=US" \
  -keystore ${keystore} \
  -storepass ${storepass} \

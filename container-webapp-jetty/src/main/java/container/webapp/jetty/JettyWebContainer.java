@@ -88,7 +88,7 @@ public class JettyWebContainer implements WebContainer {
             SslContextFactory sslContextFactory = new SslContextFactory();
             sslContextFactory.setKeyStorePath(f.toExternalForm());
             sslContextFactory.setKeyStorePassword("jettyjetty");
-            sslContextFactory.setKeyManagerPassword("storepwd");
+            sslContextFactory.setKeyManagerPassword("jettyjetty");
             sslContextFactory.setCipherComparator(HTTP2Cipher.COMPARATOR);
 
             // Setup HTTPS Configuration
