@@ -1,5 +1,6 @@
 package container.webapp.jetty;
 
+import java.io.IOException;
 import java.net.URL;
 import org.eclipse.jetty.alpn.ALPN;
 import org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory;
@@ -8,10 +9,10 @@ import org.eclipse.jetty.http2.HTTP2Cipher;
 import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
 import org.eclipse.jetty.plus.webapp.EnvConfiguration;
 import org.eclipse.jetty.plus.webapp.PlusConfiguration;
+import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
-import org.eclipse.jetty.server.NegotiatingServerConnectionFactory;
 import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -37,144 +38,177 @@ import container.webapp.api.WebContainer;
 @Component("Jetty")
 public class JettyWebContainer implements WebContainer {
 
-    @Autowired
-    @Qualifier("logger")
-    private org.slf4j.Logger logger;
-    
-    @Autowired
-    @Qualifier("httpOnePort")
-    private Integer httpOnePort;
+	private static final String KEY_STORE_PASSWORD = "jettyjetty";
 
-    @Autowired
-    @Qualifier("httpsOnePort")
-    private Integer httpsOnePort;
-    
-    @Autowired
-    @Qualifier("httpTwoPort")
-    private Integer httpTwoPort;
+	private static final long IDLE_TIMEOUT = 5000;
 
+	@Autowired
+	@Qualifier("logger")
+	private org.slf4j.Logger logger;
 
-    @Override
-    public void start(WebAppMetadata metadata, ApplicationContext acac) {
+	@Autowired
+	@Qualifier("httpOnePort")
+	private Integer httpOnePort;
 
-        try {
-            logger.info("[startup] - starting Jetty application container");
+	@Autowired
+	@Qualifier("httpsOnePort")
+	private Integer httpsOnePort;
 
-            Server server = new Server();
+	@Autowired
+	@Qualifier("httpTwoPort")
+	private Integer httpTwoPort;
 
-            // Setup HTTP Connector
-            HttpConfiguration httpConf = new HttpConfiguration();
-            httpConf.setSecurePort(httpsOnePort);
-            httpConf.setSecureScheme("https");
-            httpConf.setSendXPoweredBy(true);
-            httpConf.setSendServerVersion(true);
+	@Autowired
+	@Qualifier("shutdownToken")
+	private String shutdownToken;
 
+	@Override
+	public void start(WebAppMetadata metadata, ApplicationContext acac) {
 
+		try {
+			logger.info("[startup] - starting Jetty application container");
 
-            // Find Keystore for SSL
-            ClassLoader cl = JettyWebContainer.class.getClassLoader();
-            String keystoreResource = "ssl/keystore";
-            URL f = cl.getResource(keystoreResource);
-            if (f == null) {
-                throw new RuntimeException("Unable to find " + keystoreResource);
-            }
+			// Setup SSL
+			URL f = findSslKeystore();
+			SslContextFactory sslContextFactory = createSslContextFactory(f);
 
-            // Setup SSL
-            SslContextFactory sslContextFactory = new SslContextFactory();
-            sslContextFactory.setKeyStorePath(f.toExternalForm());
-            sslContextFactory.setKeyStorePassword("jettyjetty");
-            sslContextFactory.setKeyManagerPassword("jettyjetty");
-            sslContextFactory.setCipherComparator(HTTP2Cipher.COMPARATOR);
-            
-            // Establish the HTTP ServerConnector
-            ServerConnector httpConnector =
-                    new ServerConnector(server, new HttpConnectionFactory(httpConf));
-            httpConnector.setPort(httpOnePort);
-            httpConnector.setIdleTimeout(5000);
-            server.addConnector(httpConnector);
-            
-            // Establish the HTTPS ServerConnector
-            ServerConnector httpsConnector =
-                    new ServerConnector(server, sslContextFactory, new HttpConnectionFactory(httpConf));
-            httpsConnector.setPort(httpsOnePort);
-            httpsConnector.setIdleTimeout(5000);
-            server.addConnector(httpsConnector);
+			Server server = new Server();
 
-            // Setup HTTPS Configuration
-            HttpConfiguration httpsConf = new HttpConfiguration(httpConf);
-            httpsConf.addCustomizer(new SecureRequestCustomizer()); // adds ssl
-                                                                    // info
-                                                                    // to
-                                                                    // request
-                                                                    // object
+			// Setup configs
+			HttpConfiguration httpOneConfig = setupHttpOneConfig();
+			HttpConfiguration httpTwoConfig = setupHttpTwoConfig(httpOneConfig);
 
-            // HTTP/2 Connection Factory
-            HTTP2ServerConnectionFactory h2 = new HTTP2ServerConnectionFactory(httpsConf);
+			// Setup and register HTTP 1.1 connector
+			HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(httpOneConfig);
+			ServerConnector httpConnector = createServerConnector(server, httpOnePort, IDLE_TIMEOUT, null,
+					httpConnectionFactory);
+			server.addConnector(httpConnector);
 
- //           NegotiatingServerConnectionFactory.checkProtocolNegotiationAvailable();
-            ALPNServerConnectionFactory alpn = new ALPNServerConnectionFactory();
-            alpn.setDefaultProtocol(httpConnector.getDefaultProtocol());
+			// Setup and register HTTP 1.1 TLS connector
+			ServerConnector httpsConnector = createServerConnector(server, httpsOnePort, IDLE_TIMEOUT,
+					sslContextFactory, httpConnectionFactory);
+			server.addConnector(httpsConnector);
 
-            // SSL Connection Factory
-            SslConnectionFactory ssl =
-                    new SslConnectionFactory(sslContextFactory, alpn.getProtocol());
+			// HTTP/2 Connection Factory
+			HTTP2ServerConnectionFactory h2 = new HTTP2ServerConnectionFactory(httpTwoConfig);
 
-            // HTTP/2 Connector
-            ServerConnector http2Connector =
-                    new ServerConnector(server, ssl, alpn, h2, new HttpConnectionFactory(httpsConf));
-            http2Connector.setPort(httpTwoPort);
-            ALPN.debug = true;
-            server.addConnector(http2Connector);
+			// ALPN Connection Factory
+			ALPNServerConnectionFactory alpn = createAlpnConnectionFactory(httpConnector);
 
-            WebAppContext context = new WebAppContext();
-            context.setContextPath(metadata.getContextPath());
-            context.setWar(metadata.getWar().getAbsolutePath());
-            context.setExtractWAR(true);
+			// SSL Connection Factory
+			SslConnectionFactory ssl = new SslConnectionFactory(sslContextFactory, alpn.getProtocol());
 
-            context.setConfigurations(new Configuration[] {new AnnotationConfiguration(),
-                    new WebInfConfiguration(), new WebXmlConfiguration(),
-                    new MetaInfConfiguration(), new FragmentConfiguration(),
-                    new EnvConfiguration(), new PlusConfiguration(), new JettyWebXmlConfiguration()});
+			// HTTP/2 Connector
+			ServerConnector http2Connector = createServerConnector(server, httpTwoPort, IDLE_TIMEOUT, null, ssl, alpn,
+					h2, new HttpConnectionFactory(httpTwoConfig));
+			ALPN.debug = true;
+			server.addConnector(http2Connector);
 
-            String url =
-                    JettyWebContainer.class.getProtectionDomain().getCodeSource().getLocation()
-                            .toString();
+			WebAppContext context = createWebAppContext(metadata);
+			setupHandlers(acac, server, context);
 
-            String a = ".*/^(asm-all-repackaged)[^/]*\\.jar";
-            context.setAttribute("org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern", a);
+			server.start();
 
-            String jarRegex =
-                    ".*" + Files.getNameWithoutExtension(url) + "\\." + Files.getFileExtension(url);
-            context.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern",
-                    jarRegex);
-            context.setParentLoaderPriority(true);
+			logger.info("[startup] - started Jetty application container");
+			logContainerInfo(server);
 
+			server.join();
+		} catch (Exception x) {
+			throw new RuntimeException(x);
+		}
+	}
 
-            HandlerList handlers = new HandlerList();
-            handlers.setHandlers(new Handler[] {
-                    new ShutdownHandler((String) acac.getBean("shutdownToken")), context});
-            server.setHandler(handlers);
+	private HttpConfiguration setupHttpOneConfig() {
+		HttpConfiguration httpConf = new HttpConfiguration();
+		httpConf.setSecurePort(httpsOnePort);
+		httpConf.setSecureScheme("https");
+		httpConf.setSendXPoweredBy(true);
+		httpConf.setSendServerVersion(true);
+		return httpConf;
+	}
 
-            
-            server.start();
+	private void logContainerInfo(Server server) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		sb.append("\n     ____.       __    __          \n");
+		sb.append("    |    | _____/  |__/  |_ ___.__.\n");
+		sb.append("    |    |/ __ \\   __\\   __<   |  |\n");
+		sb.append("/\\__|    \\  ___/|  |  |  |  \\___  |\n");
+		sb.append("\\________|\\___  >__|  |__|  / ____|\n");
+		sb.append("              \\/            \\/\n");
+		sb.append("\nJetty configuration: ");
+		server.dump(sb);
+		logger.info(sb.toString());
+	}
 
-            logger.info("[startup] - started Jetty application container");
+	private ALPNServerConnectionFactory createAlpnConnectionFactory(ServerConnector httpConnector) {
+		ALPNServerConnectionFactory alpn = new ALPNServerConnectionFactory();
+		alpn.setDefaultProtocol(httpConnector.getDefaultProtocol());
+		return alpn;
+	}
 
-            StringBuilder sb = new StringBuilder();
-            sb.append("\n     ____.       __    __          \n");
-            sb.append("    |    | _____/  |__/  |_ ___.__.\n");
-            sb.append("    |    |/ __ \\   __\\   __<   |  |\n");
-            sb.append("/\\__|    \\  ___/|  |  |  |  \\___  |\n");
-            sb.append("\\________|\\___  >__|  |__|  / ____|\n");
-            sb.append("              \\/            \\/\n");
-            sb.append("\nJetty configuration: ");
-            server.dump(sb);
-            logger.info(sb.toString());
+	private HttpConfiguration setupHttpTwoConfig(HttpConfiguration httpConf) {
+		HttpConfiguration config = new HttpConfiguration(httpConf);
+		// adds ssl info to request object
+		config.addCustomizer(new SecureRequestCustomizer());
+		return config;
+	}
 
-            server.join();
+	private URL findSslKeystore() {
+		// Find Keystore for SSL
+		ClassLoader cl = JettyWebContainer.class.getClassLoader();
+		String keystoreResource = "ssl/keystore";
+		URL f = cl.getResource(keystoreResource);
+		if (f == null) {
+			throw new RuntimeException("Unable to find " + keystoreResource);
+		}
+		return f;
+	}
 
-        } catch (Exception x) {
-            throw new RuntimeException(x);
-        }
-    }
+	private void setupHandlers(ApplicationContext acac, Server server, WebAppContext context) {
+		HandlerList handlers = new HandlerList();
+		handlers.setHandlers(new Handler[] { new ShutdownHandler(shutdownToken), context });
+		server.setHandler(handlers);
+	}
+
+	private WebAppContext createWebAppContext(WebAppMetadata metadata) {
+		WebAppContext context = new WebAppContext();
+		context.setContextPath(metadata.getContextPath());
+		context.setWar(metadata.getWar().getAbsolutePath());
+		context.setExtractWAR(true);
+
+		context.setConfigurations(new Configuration[] { new AnnotationConfiguration(), new WebInfConfiguration(),
+				new WebXmlConfiguration(), new MetaInfConfiguration(), new FragmentConfiguration(),
+				new EnvConfiguration(), new PlusConfiguration(), new JettyWebXmlConfiguration() });
+
+		String url = JettyWebContainer.class.getProtectionDomain().getCodeSource().getLocation().toString();
+
+		String a = ".*/^(asm-all-repackaged)[^/]*\\.jar";
+		context.setAttribute("org.eclipse.jetty.server.webapp.WebInfIncludeJarPattern", a);
+
+		String jarRegex = ".*" + Files.getNameWithoutExtension(url) + "\\." + Files.getFileExtension(url);
+		context.setAttribute("org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern", jarRegex);
+		context.setParentLoaderPriority(true);
+		return context;
+	}
+
+	private ServerConnector createServerConnector(Server server, int port, long timeout,
+			SslContextFactory sslContextFactory, ConnectionFactory... factories) {
+
+		ServerConnector httpConnector = null;
+		httpConnector = (sslContextFactory == null) ? new ServerConnector(server, factories)
+				: new ServerConnector(server, sslContextFactory, factories);
+
+		httpConnector.setPort(port);
+		httpConnector.setIdleTimeout(timeout);
+		return httpConnector;
+	}
+
+	private SslContextFactory createSslContextFactory(URL f) {
+		SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
+		sslContextFactory.setKeyStorePath(f.toExternalForm());
+		sslContextFactory.setKeyStorePassword(KEY_STORE_PASSWORD);
+		sslContextFactory.setKeyManagerPassword(KEY_STORE_PASSWORD);
+		sslContextFactory.setCipherComparator(HTTP2Cipher.COMPARATOR);
+		return sslContextFactory;
+	}
 }
