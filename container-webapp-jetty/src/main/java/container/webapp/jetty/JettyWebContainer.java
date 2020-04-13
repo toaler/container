@@ -62,6 +62,10 @@ public class JettyWebContainer implements WebContainer {
 	@Qualifier("shutdownToken")
 	private String shutdownToken;
 
+	@Autowired
+	@Qualifier("metricsListener")
+	private Object metricsListener;
+
 	@Override
 	public void start(WebAppMetadata metadata, ApplicationContext acac) {
 
@@ -200,6 +204,9 @@ public class JettyWebContainer implements WebContainer {
 
 		httpConnector.setPort(port);
 		httpConnector.setIdleTimeout(timeout);
+		
+		httpConnector.addBean(metricsListener);
+
 		return httpConnector;
 	}
 
