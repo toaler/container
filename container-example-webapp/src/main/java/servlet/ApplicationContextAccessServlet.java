@@ -1,7 +1,11 @@
 package servlet;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
+
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,11 +32,13 @@ public class ApplicationContextAccessServlet extends HttpServlet {
 		SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
 				config.getServletContext());
 	}
-
+	
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		logger.info("doGet");
-		response.setContentType("text/plain");
+		response.setContentType("text/html");
+		response.setHeader("cache-control","private, max-age=600");
+		
 		response.getWriter().write(new Date().toString() + "\n");
 
 		response.getWriter().write(myComponent.message() + "\n");
